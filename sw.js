@@ -1,4 +1,4 @@
-const CACHE = 'xp-v2';
+const CACHE = 'xp-v3';
 const BASE = '/xp-tracker';
 const ASSETS = [BASE + '/', BASE + '/index.html', BASE + '/manifest.json'];
 
@@ -28,48 +28,33 @@ function getDB() {
     req.onerror = reject;
   });
 }
-
-async function getLastNotif() {
-  try {
-    const db = await getDB();
-    return new Promise(resolve => {
-      const tx = db.transaction('meta', 'readonly');
-      const req = tx.objectStore('meta').get('lastNotif');
-      req.onsuccess = e => resolve(e.target.result || 0);
-      req.onerror = () => resolve(0);
-    });
-  } catch { return 0; }
+async function getVal(key) {
+  try { const db = await getDB(); return new Promise(res => { const r = db.transaction('meta','readonly').objectStore('meta').get(key); r.onsuccess = e => res(e.target.result); r.onerror = () => res(null); }); } catch { return null; }
 }
-
-async function setLastNotif(ts) {
-  try {
-    const db = await getDB();
-    const tx = db.transaction('meta', 'readwrite');
-    tx.objectStore('meta').put(ts, 'lastNotif');
-  } catch {}
+async function setVal(key, val) {
+  try { const db = await getDB(); const tx = db.transaction('meta','readwrite'); tx.objectStore('meta').put(val, key); } catch {}
 }
 
 async function maybeNotify() {
   const now = Date.now();
-  const last = await getLastNotif();
+  const last = await getVal('lastNotif') || 0;
   const hour = new Date().getHours();
   const isMorning = hour >= 9 && hour < 10;
   const isEvening = hour >= 20 && hour < 21;
   const dayMs = 20 * 60 * 60 * 1000;
-
   if ((isMorning || isEvening) && (now - last > dayMs)) {
     const allClients = await self.clients.matchAll({ type: 'window' });
     if (allClients.length > 0) {
-      allClients[0].postMessage({ type: 'NOTIFY' });
-      await setLastNotif(now);
+      allClients[0].postMessage({ type: 'NOTIFY', hour });
+      await setVal('lastNotif', now);
     } else {
       const title = isMorning ? 'Доброе утро!' : 'Вечерний отчёт';
-      const body = isMorning ? 'Открой XP Tracker и заработай очки!' : 'Как прошёл день? Отметь задачи!';
+      const body = isMorning ? 'Заработай XP сегодня!' : 'Проверь дневной прогресс';
       self.registration.showNotification(title, {
         body, icon: BASE + '/icon-192.png', badge: BASE + '/icon-192.png',
-        tag: 'xp-daily', renotify: true, data: { url: BASE + '/' }
+        tag: 'xp-daily', renotify: true
       });
-      await setLastNotif(now);
+      await setVal('lastNotif', now);
     }
   }
   setTimeout(maybeNotify, 30 * 60 * 1000);
