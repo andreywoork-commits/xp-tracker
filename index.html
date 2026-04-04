@@ -9,6 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="XP"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
   <style>
     :root {
@@ -20,55 +21,96 @@
       --muted: #6b6b6b;
       --accent: #c8f04a;
       --accent-dim: rgba(200,240,74,0.10);
+      --danger: #ff5c5c;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; }
-    .app { max-width: 480px; margin: 0 auto; padding: 0 0 5rem; }
+    .app { max-width: 480px; margin: 0 auto; padding: 0 0 6rem; }
 
+    /* HEADER */
     .header { padding: 2.5rem 1.5rem 1rem; }
-    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.75rem; }
-    .level-pill { background: var(--accent); color: #0f0f0f; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 99px; letter-spacing: 0.04em; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .level-pill { background: var(--accent); color: #0f0f0f; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 99px; letter-spacing: 0.04em; white-space: nowrap; }
     .header-actions { display: flex; gap: 8px; }
-    .icon-btn { background: var(--surface); border: 1px solid var(--border); color: var(--muted); font-size: 15px; width: 36px; height: 36px; border-radius: 99px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .icon-btn { background: var(--surface); border: 1px solid var(--border); color: var(--muted); font-size: 14px; width: 36px; height: 36px; border-radius: 99px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .icon-btn:active { opacity: 0.6; }
     .icon-btn.on { border-color: var(--accent); color: var(--accent); }
 
-    .xp-num { font-size: clamp(56px, 16vw, 80px); font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
-    .xp-num span { color: var(--accent); }
-    .xp-caption { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 6px; }
+    .xp-num { font-size: 72px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
+    .xp-num span { color: var(--accent); font-size: 40px; vertical-align: middle; margin-left: 6px; }
+    .xp-caption { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 8px; }
 
+    /* BAR */
     .bar-section { padding: 1.25rem 1.5rem 0; }
     .bar-bg { height: 12px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
     .bar-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
     .bar-meta { display: flex; justify-content: space-between; margin-top: 7px; font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); }
 
+    /* DIVIDER & LABEL */
     .divider { height: 1px; background: var(--border); margin: 1.75rem 1.5rem; }
-    .sec-label { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; padding: 0 1.5rem; margin-bottom: 0.6rem; }
+    .sec-header { display: flex; justify-content: space-between; align-items: center; padding: 0 1.5rem; margin-bottom: 0.75rem; }
+    .sec-label { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+    .sec-action { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent); cursor: pointer; background: none; border: none; padding: 0; }
 
+    /* NOTIFY BANNER */
     .notify-banner { margin: 1.5rem 1.5rem 0; background: var(--accent-dim); border: 1px solid rgba(200,240,74,0.2); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .notify-text { font-size: 13px; color: var(--text); line-height: 1.4; }
     .notify-btn { background: var(--accent); color: #0f0f0f; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; padding: 7px 14px; border: none; border-radius: 99px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 
-    .presets { padding: 0 1.5rem; display: flex; flex-direction: column; gap: 2px; }
-    .preset { display: flex; align-items: center; justify-content: space-between; padding: 13px 14px; background: var(--surface); border: 1px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.12s; user-select: none; }
-    .preset:active { background: var(--accent-dim); border-color: var(--accent); transform: scale(0.99); }
-    .preset-name { font-size: 14px; color: var(--text); }
-    .preset-xp { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: var(--accent); }
+    /* DAILIES */
+    .dailies { padding: 0 1.5rem; display: flex; flex-direction: column; gap: 2px; }
+    .daily-item { display: flex; align-items: center; gap: 12px; padding: 13px 14px; background: var(--surface); border: 1px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.12s; user-select: none; }
+    .daily-item.done { background: var(--accent-dim); border-color: rgba(200,240,74,0.2); opacity: 0.6; }
+    .daily-check { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.12s; }
+    .daily-item.done .daily-check { background: var(--accent); border-color: var(--accent); color: #0f0f0f; font-size: 11px; }
+    .daily-name { flex: 1; font-size: 14px; color: var(--text); }
+    .daily-item.done .daily-name { text-decoration: line-through; color: var(--muted); }
+    .daily-xp { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+    .daily-streak { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); margin-left: 4px; }
 
+    /* DAILY BONUS */
+    .daily-bonus { margin: 8px 1.5rem 0; background: var(--accent-dim); border: 1px solid rgba(200,240,74,0.15); border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+    .daily-bonus-text { font-size: 12px; color: var(--muted); }
+    .daily-bonus-xp { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--accent); font-weight: 700; }
+
+    /* PRESETS */
+    .presets { padding: 0 1.5rem; display: flex; flex-direction: column; gap: 2px; }
+    .preset { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 13px 14px; background: var(--surface); border: 1px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.12s; user-select: none; }
+    .preset:active { background: var(--accent-dim); border-color: var(--accent); transform: scale(0.99); }
+    .preset-name { font-size: 14px; color: var(--text); flex: 1; }
+    .preset-xp { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+    .preset-edit { background: none; border: none; color: var(--muted); font-size: 13px; cursor: pointer; padding: 4px; flex-shrink: 0; display: none; }
+    .edit-mode .preset-edit { display: block; }
+    .edit-mode .preset:active { transform: none; }
+
+    /* EDIT MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; display: flex; align-items: flex-end; justify-content: center; }
+    .modal { background: var(--surface); border-radius: 16px 16px 0 0; padding: 1.5rem; width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 12px; }
+    .modal-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .modal input { background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px; padding: 12px 14px; border-radius: 10px; outline: none; width: 100%; transition: border-color 0.12s; }
+    .modal input:focus { border-color: var(--accent); }
+    .modal-btns { display: flex; gap: 8px; }
+    .modal-save { flex: 1; background: var(--accent); color: #0f0f0f; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; padding: 12px; border: none; border-radius: 10px; cursor: pointer; }
+    .modal-delete { background: var(--surface2); border: 1px solid var(--border); color: var(--danger); font-family: 'Syne', sans-serif; font-size: 14px; padding: 12px 16px; border-radius: 10px; cursor: pointer; }
+    .modal-cancel { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-family: 'Syne', sans-serif; font-size: 14px; padding: 12px 16px; border-radius: 10px; cursor: pointer; }
+
+    /* CUSTOM */
     .custom-wrap { padding: 0 1.5rem; }
     .custom-row { display: flex; gap: 8px; }
     .custom-row input { flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px; padding: 12px 14px; border-radius: 10px; outline: none; transition: border-color 0.12s; min-width: 0; }
     .custom-row input:focus { border-color: var(--accent); }
     .custom-row input::placeholder { color: var(--muted); }
     .xp-input { max-width: 80px !important; }
-    .add-btn { background: var(--accent); color: #0f0f0f; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; padding: 0 18px; border: none; border-radius: 10px; cursor: pointer; flex-shrink: 0; }
+    .add-btn { background: var(--accent); color: #0f0f0f; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 20px; padding: 0 18px; border: none; border-radius: 10px; cursor: pointer; flex-shrink: 0; line-height: 1; height: 46px; }
     .add-btn:active { opacity: 0.7; }
 
+    /* HISTORY */
     .history-list { padding: 0 1.5rem; display: flex; flex-direction: column; gap: 2px; }
     .h-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--surface); border-radius: 8px; }
     .h-name { font-size: 13px; color: var(--muted); }
     .h-xp { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--accent); }
 
+    /* TOAST */
     .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--accent); color: #0f0f0f; font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; padding: 10px 22px; border-radius: 99px; white-space: nowrap; transition: transform 0.3s cubic-bezier(.4,0,.2,1); z-index: 99; pointer-events: none; }
     .toast.show { transform: translateX(-50%) translateY(0); }
     .hidden { display: none !important; }
@@ -76,6 +118,8 @@
 </head>
 <body>
 <div class="app">
+
+  <!-- HEADER -->
   <div class="header">
     <div class="header-top">
       <div class="level-pill" id="level-pill">Уровень 1</div>
@@ -84,10 +128,11 @@
         <button class="icon-btn" id="reset-btn" title="Сброс">↺</button>
       </div>
     </div>
-    <div class="xp-num" id="xp-num">0 <span>XP</span></div>
+    <div class="xp-num" id="xp-num">0<span>XP</span></div>
     <div class="xp-caption" id="xp-caption">сегодня: 0 XP</div>
   </div>
 
+  <!-- BAR -->
   <div class="bar-section">
     <div class="bar-bg"><div class="bar-fill" id="bar" style="width:0%"></div></div>
     <div class="bar-meta">
@@ -96,17 +141,35 @@
     </div>
   </div>
 
+  <!-- NOTIFY BANNER -->
   <div id="notify-banner" class="notify-banner hidden">
-    <div class="notify-text">Включи уведомления — буду напоминать про XP каждый день</div>
+    <div class="notify-text">Включи уведомления — буду напоминать каждый день</div>
     <button class="notify-btn" id="notify-allow-btn">Включить</button>
   </div>
 
+  <!-- DAILIES -->
   <div class="divider"></div>
-  <div class="sec-label">задачи</div>
+  <div class="sec-header">
+    <span class="sec-label">дейлики</span>
+    <span class="sec-label" id="daily-count" style="color:var(--muted)">0 / 0</span>
+  </div>
+  <div class="dailies" id="dailies"></div>
+  <div class="daily-bonus" id="daily-bonus">
+    <span class="daily-bonus-text">Бонус за все дейлики</span>
+    <span class="daily-bonus-xp" id="daily-bonus-xp">+100 XP</span>
+  </div>
+
+  <!-- ЗАДАЧИ -->
+  <div class="divider"></div>
+  <div class="sec-header">
+    <span class="sec-label">задачи</span>
+    <button class="sec-action" id="edit-toggle">✎ редактировать</button>
+  </div>
   <div class="presets" id="presets"></div>
 
+  <!-- СВОЯ ЗАДАЧА -->
   <div class="divider"></div>
-  <div class="sec-label">своя задача</div>
+  <div class="sec-header"><span class="sec-label">своя задача</span></div>
   <div class="custom-wrap">
     <div class="custom-row">
       <input type="text" id="task-name" placeholder="Что сделал?"/>
@@ -115,15 +178,34 @@
     </div>
   </div>
 
+  <!-- ИСТОРИЯ -->
   <div class="divider hidden" id="hdiv"></div>
-  <div class="sec-label hidden" id="hlabel">история</div>
+  <div class="sec-header hidden" id="hlabel"><span class="sec-label">история</span></div>
   <div class="history-list" id="history-list"></div>
+
 </div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay hidden" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Редактировать задачу</div>
+    <input type="text" id="modal-name" placeholder="Название"/>
+    <input type="number" id="modal-xp" placeholder="XP" min="1"/>
+    <div class="modal-btns">
+      <button class="modal-save" id="modal-save">Сохранить</button>
+      <button class="modal-delete" id="modal-delete">Удалить</button>
+      <button class="modal-cancel" id="modal-cancel">✕</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 const XP_PER_LEVEL = 500;
-const PRESETS = [
+const DAILY_BONUS = 100;
+
+const DEFAULT_PRESETS = [
   { name: "Постирал вещи", xp: 25 },
   { name: "Приготовил еду", xp: 25 },
   { name: "Зарядка / разминка", xp: 50 },
@@ -133,60 +215,205 @@ const PRESETS = [
   { name: "Сложное дело", xp: 150 },
 ];
 
-let state = JSON.parse(localStorage.getItem('xp_state') || 'null') || {
-  totalXP: 0, todayXP: 0, lastDate: new Date().toDateString(), history: []
-};
+const DEFAULT_DAILIES = [
+  { name: "Выпил воду утром", xp: 10 },
+  { name: "Зарядка", xp: 25 },
+  { name: "Прочитал что-то полезное", xp: 20 },
+  { name: "Лёг спать вовремя", xp: 15 },
+];
 
-function save() { localStorage.setItem('xp_state', JSON.stringify(state)); }
+function loadState() {
+  return JSON.parse(localStorage.getItem('xp_state') || 'null') || {
+    totalXP: 0, todayXP: 0, lastDate: '', history: []
+  };
+}
+function loadPresets() {
+  return JSON.parse(localStorage.getItem('xp_presets') || 'null') || DEFAULT_PRESETS;
+}
+function loadDailies() {
+  return JSON.parse(localStorage.getItem('xp_dailies') || 'null') || DEFAULT_DAILIES;
+}
+function loadDailyProgress() {
+  const today = new Date().toDateString();
+  const saved = JSON.parse(localStorage.getItem('xp_daily_progress') || 'null');
+  if (!saved || saved.date !== today) return { date: today, done: [], bonusGiven: false };
+  return saved;
+}
+
+let state = loadState();
+let presets = loadPresets();
+let dailies = loadDailies();
+let dailyProgress = loadDailyProgress();
+
+function saveState() { localStorage.setItem('xp_state', JSON.stringify(state)); }
+function savePresets() { localStorage.setItem('xp_presets', JSON.stringify(presets)); }
+function saveDailies() { localStorage.setItem('xp_dailies', JSON.stringify(dailies)); }
+function saveDailyProgress() { localStorage.setItem('xp_daily_progress', JSON.stringify(dailyProgress)); }
 
 function resetDayIfNeeded() {
   const today = new Date().toDateString();
-  if (state.lastDate !== today) { state.todayXP = 0; state.lastDate = today; save(); }
+  if (state.lastDate !== today) {
+    state.todayXP = 0;
+    state.lastDate = today;
+    saveState();
+  }
+  if (dailyProgress.date !== today) {
+    dailyProgress = { date: today, done: [], bonusGiven: false };
+    saveDailyProgress();
+  }
 }
 
+// ---- RENDER ----
 function render() {
   resetDayIfNeeded();
   const level = Math.floor(state.totalXP / XP_PER_LEVEL) + 1;
   const xpInLevel = state.totalXP % XP_PER_LEVEL;
   const pct = Math.round((xpInLevel / XP_PER_LEVEL) * 100);
   const left = XP_PER_LEVEL - xpInLevel;
+
   document.getElementById('level-pill').textContent = 'Уровень ' + level;
-  document.getElementById('xp-num').innerHTML = state.totalXP + ' <span>XP</span>';
+  document.getElementById('xp-num').innerHTML = state.totalXP + '<span>XP</span>';
   document.getElementById('xp-caption').textContent = 'сегодня: ' + state.todayXP + ' XP';
   document.getElementById('bar').style.width = pct + '%';
   document.getElementById('bar-cur').textContent = xpInLevel + ' / ' + XP_PER_LEVEL;
   document.getElementById('bar-left').textContent = 'осталось ' + left + ' XP';
+
+  renderDailies();
+  renderPresets();
+  renderHistory();
+}
+
+function renderDailies() {
+  const el = document.getElementById('dailies');
+  const doneCount = dailyProgress.done.length;
+  document.getElementById('daily-count').textContent = doneCount + ' / ' + dailies.length;
+
+  const totalBonus = dailies.reduce((s, d) => s + d.xp, 0) + DAILY_BONUS;
+  document.getElementById('daily-bonus-xp').textContent = '+' + DAILY_BONUS + ' XP бонус';
+
+  el.innerHTML = dailies.map((d, i) => {
+    const done = dailyProgress.done.includes(i);
+    return `<div class="daily-item${done ? ' done' : ''}" data-i="${i}">
+      <div class="daily-check">${done ? '✓' : ''}</div>
+      <span class="daily-name">${d.name}</span>
+      <span class="daily-xp">+${d.xp}</span>
+    </div>`;
+  }).join('');
+
+  el.querySelectorAll('.daily-item').forEach(el => {
+    el.addEventListener('click', () => toggleDaily(parseInt(el.dataset.i)));
+  });
+
+  const allDone = dailyProgress.done.length === dailies.length;
+  const bonusEl = document.getElementById('daily-bonus');
+  bonusEl.style.opacity = allDone ? '1' : '0.4';
+  if (allDone && !dailyProgress.bonusGiven) {
+    dailyProgress.bonusGiven = true;
+    saveDailyProgress();
+    addXP('🎯 Все дейлики выполнены!', DAILY_BONUS, true);
+  }
+}
+
+function toggleDaily(i) {
+  if (dailyProgress.done.includes(i)) return; // no undo
+  dailyProgress.done.push(i);
+  saveDailyProgress();
+  addXP(dailies[i].name, dailies[i].xp);
+}
+
+function renderPresets() {
+  const el = document.getElementById('presets');
+  const editing = el.classList.contains('edit-mode');
+  el.innerHTML = presets.map((p, i) =>
+    `<div class="preset" data-i="${i}">
+      <span class="preset-name">${p.name}</span>
+      <span class="preset-xp">+${p.xp}</span>
+      <button class="preset-edit" data-i="${i}">✎</button>
+    </div>`
+  ).join('');
+
+  el.querySelectorAll('.preset').forEach(btn => {
+    btn.addEventListener('click', e => {
+      if (e.target.classList.contains('preset-edit')) return;
+      if (el.classList.contains('edit-mode')) return;
+      addXP(presets[parseInt(btn.dataset.i)].name, presets[parseInt(btn.dataset.i)].xp);
+    });
+  });
+  el.querySelectorAll('.preset-edit').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); openModal(parseInt(btn.dataset.i)); });
+  });
+}
+
+function renderHistory() {
   const hl = document.getElementById('history-list');
   if (state.history.length > 0) {
     document.getElementById('hdiv').classList.remove('hidden');
     document.getElementById('hlabel').classList.remove('hidden');
     hl.innerHTML = state.history.slice().reverse().slice(0, 10).map(h =>
-      '<div class="h-item"><span class="h-name">' + h.name + '</span><span class="h-xp">+' + h.xp + '</span></div>'
+      `<div class="h-item"><span class="h-name">${h.name}</span><span class="h-xp">+${h.xp}</span></div>`
     ).join('');
   }
 }
 
-function addXP(name, xp) {
+// ---- XP ----
+function addXP(name, xp, silent) {
   const prevLevel = Math.floor(state.totalXP / XP_PER_LEVEL) + 1;
   state.totalXP += xp;
   state.todayXP += xp;
   state.history.push({ name, xp });
   if (state.history.length > 50) state.history = state.history.slice(-50);
-  save();
+  saveState();
   const newLevel = Math.floor(state.totalXP / XP_PER_LEVEL) + 1;
-  showToast(newLevel > prevLevel ? '🎉 Уровень ' + newLevel + '!' : '+' + xp + ' XP');
+  if (newLevel > prevLevel) showToast('🎉 Уровень ' + newLevel + '!');
+  else if (!silent) showToast('+' + xp + ' XP');
   render();
 }
 
-const presetsEl = document.getElementById('presets');
-PRESETS.forEach(p => {
-  const div = document.createElement('div');
-  div.className = 'preset';
-  div.innerHTML = '<span class="preset-name">' + p.name + '</span><span class="preset-xp">+' + p.xp + '</span>';
-  div.addEventListener('click', () => addXP(p.name, p.xp));
-  presetsEl.appendChild(div);
+// ---- EDIT MODE ----
+let editMode = false;
+document.getElementById('edit-toggle').addEventListener('click', () => {
+  editMode = !editMode;
+  document.getElementById('presets').classList.toggle('edit-mode', editMode);
+  document.getElementById('edit-toggle').textContent = editMode ? '✓ готово' : '✎ редактировать';
 });
 
+// ---- MODAL ----
+let editingIndex = null;
+function openModal(i) {
+  editingIndex = i;
+  const p = i === -1 ? { name: '', xp: '' } : presets[i];
+  document.getElementById('modal-title').textContent = i === -1 ? 'Новая задача' : 'Редактировать';
+  document.getElementById('modal-name').value = p.name;
+  document.getElementById('modal-xp').value = p.xp;
+  document.getElementById('modal-delete').style.display = i === -1 ? 'none' : '';
+  document.getElementById('modal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('modal-name').focus(), 100);
+}
+function closeModal() { document.getElementById('modal').classList.add('hidden'); editingIndex = null; }
+document.getElementById('modal-cancel').addEventListener('click', closeModal);
+document.getElementById('modal-overlay') && document.getElementById('modal-overlay').addEventListener('click', closeModal);
+document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) closeModal(); });
+
+document.getElementById('modal-save').addEventListener('click', () => {
+  const name = document.getElementById('modal-name').value.trim();
+  const xp = parseInt(document.getElementById('modal-xp').value) || 0;
+  if (!name || xp <= 0) { showToast('Заполни поля'); return; }
+  if (editingIndex === -1) presets.push({ name, xp });
+  else presets[editingIndex] = { name, xp };
+  savePresets();
+  closeModal();
+  renderPresets();
+});
+
+document.getElementById('modal-delete').addEventListener('click', () => {
+  if (editingIndex === null || editingIndex === -1) return;
+  presets.splice(editingIndex, 1);
+  savePresets();
+  closeModal();
+  renderPresets();
+});
+
+// + добавить задачу кнопка
 document.getElementById('add-btn').addEventListener('click', () => {
   const name = document.getElementById('task-name').value.trim() || 'Своя задача';
   const xp = parseInt(document.getElementById('task-xp').value) || 0;
@@ -196,12 +423,15 @@ document.getElementById('add-btn').addEventListener('click', () => {
   addXP(name, xp);
 });
 
+// Reset
 document.getElementById('reset-btn').addEventListener('click', () => {
   if (!confirm('Сбросить весь прогресс?')) return;
   state = { totalXP: 0, todayXP: 0, lastDate: new Date().toDateString(), history: [] };
-  save(); render();
+  dailyProgress = { date: new Date().toDateString(), done: [], bonusGiven: false };
+  saveState(); saveDailyProgress(); render();
 });
 
+// Toast
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -217,26 +447,20 @@ const banner = document.getElementById('notify-banner');
 
 function updateNotifUI() {
   if (!('Notification' in window)) return;
-  const granted = Notification.permission === 'granted';
-  notifBtn.classList.toggle('on', granted);
+  notifBtn.classList.toggle('on', Notification.permission === 'granted');
   if (Notification.permission === 'default') banner.classList.remove('hidden');
 }
 
 async function requestNotif() {
   if (!('Notification' in window)) { showToast('Не поддерживается'); return; }
   const perm = await Notification.requestPermission();
-  if (perm === 'granted') {
-    localStorage.setItem('notif_enabled', '1');
-    showToast('Уведомления включены');
-    banner.classList.add('hidden');
-  }
+  if (perm === 'granted') { localStorage.setItem('notif_enabled', '1'); showToast('Уведомления включены'); banner.classList.add('hidden'); }
   updateNotifUI();
 }
 
 notifBtn.addEventListener('click', requestNotif);
 document.getElementById('notify-allow-btn').addEventListener('click', requestNotif);
 
-// Show notification now if SW ready (called from sw.js timer)
 function sendNotif(title, body) {
   if (Notification.permission !== 'granted') return;
   navigator.serviceWorker.ready.then(reg => {
@@ -244,7 +468,6 @@ function sendNotif(title, body) {
   });
 }
 
-// Daily notification logic - SW handles timing
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
   navigator.serviceWorker.addEventListener('message', e => {
@@ -252,9 +475,11 @@ if ('serviceWorker' in navigator) {
       resetDayIfNeeded();
       const xpInLevel = state.totalXP % XP_PER_LEVEL;
       const left = XP_PER_LEVEL - xpInLevel;
+      const level = Math.floor(state.totalXP / XP_PER_LEVEL) + 1;
       const hour = new Date().getHours();
-      if (hour < 12) sendNotif('Доброе утро!', 'Сегодня ' + state.todayXP + ' XP. Заработай ещё!');
-      else sendNotif('Вечерний отчёт', 'До уровня ' + (Math.floor(state.totalXP / XP_PER_LEVEL) + 1) + ' осталось ' + left + ' XP');
+      const doneDailies = dailyProgress.done.length;
+      if (hour < 12) sendNotif('Доброе утро!', 'Выполни дейлики и заработай XP. Уровень ' + level);
+      else sendNotif('Вечерний отчёт', 'Дейлики: ' + doneDailies + '/' + dailies.length + ' · До уровня ' + (level+1) + ' осталось ' + left + ' XP');
     }
   });
 }
