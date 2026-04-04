@@ -12,480 +12,795 @@
   <link rel="apple-touch-icon" href="icon-192.png"/>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --bg: #0f0f0f;
-      --surface: #1a1a1a;
-      --surface2: #242424;
-      --border: #2e2e2e;
-      --text: #f0ede6;
-      --muted: #6b6b6b;
-      --accent: #c8f04a;
-      --accent-dim: rgba(200,240,74,0.10);
-      --danger: #ff5c5c;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; }
-    .app { max-width: 480px; margin: 0 auto; padding: 0 0 6rem; }
+    :root{--bg:#0f0f0f;--surface:#1a1a1a;--s2:#242424;--border:#2e2e2e;--text:#f0ede6;--muted:#6b6b6b;--accent:#c8f04a;--adim:rgba(200,240,74,.10);--blue:#4a9eff;--bdim:rgba(74,158,255,.12);--danger:#ff5555;--ddim:rgba(255,85,85,.08);}
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;}
+    .hidden{display:none!important;}
+
+    /* MAIN VIEW */
+    #view-main{max-width:480px;margin:0 auto;padding:0 0 6rem;}
 
     /* HEADER */
-    .header { padding: 2.5rem 1.5rem 1rem; }
-    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-    .level-pill { background: var(--accent); color: #0f0f0f; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 99px; letter-spacing: 0.04em; white-space: nowrap; }
-    .header-actions { display: flex; gap: 8px; }
-    .icon-btn { background: var(--surface); border: 1px solid var(--border); color: var(--muted); font-size: 14px; width: 36px; height: 36px; border-radius: 99px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .icon-btn:active { opacity: 0.6; }
-    .icon-btn.on { border-color: var(--accent); color: var(--accent); }
-
-    .xp-num { font-size: 72px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
-    .xp-num span { color: var(--accent); font-size: 40px; vertical-align: middle; margin-left: 6px; }
-    .xp-caption { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 8px; }
+    .header{padding:2.5rem 1.5rem 1rem;}
+    .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+    .level-pill{background:var(--accent);color:#0f0f0f;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:5px 12px;border-radius:99px;letter-spacing:.04em;}
+    .header-actions{display:flex;gap:8px;}
+    .icon-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);font-size:15px;width:36px;height:36px;border-radius:99px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .icon-btn:active{opacity:.6;}
+    .icon-btn.on{border-color:var(--accent);color:var(--accent);}
+    .xp-num{font-size:72px;font-weight:800;line-height:1;letter-spacing:-.03em;}
+    .xp-num span{color:var(--accent);font-size:40px;vertical-align:middle;margin-left:4px;}
+    .xp-caption{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-top:8px;}
 
     /* BAR */
-    .bar-section { padding: 1.25rem 1.5rem 0; }
-    .bar-bg { height: 12px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
-    .bar-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
-    .bar-meta { display: flex; justify-content: space-between; margin-top: 7px; font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); }
+    .bar-section{padding:1.25rem 1.5rem 0;}
+    .bar-bg{position:relative;height:14px;background:var(--s2);border-radius:99px;overflow:hidden;}
+    .bar-fill{position:absolute;left:0;top:0;height:100%;background:var(--accent);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+    .bar-over{position:absolute;left:0;top:0;height:100%;background:var(--blue);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1);opacity:.85;}
+    .bar-meta{display:flex;justify-content:space-between;margin-top:7px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);}
+    .bar-bank{color:var(--blue);}
 
-    /* DIVIDER & LABEL */
-    .divider { height: 1px; background: var(--border); margin: 1.75rem 1.5rem; }
-    .sec-header { display: flex; justify-content: space-between; align-items: center; padding: 0 1.5rem; margin-bottom: 0.75rem; }
-    .sec-label { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
-    .sec-action { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent); cursor: pointer; background: none; border: none; padding: 0; }
+    /* LEVEL BANNER */
+    .lvl-banner{margin:1rem 1.5rem 0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+    .lvl-banner.ok{border-color:rgba(200,240,74,.35);background:var(--adim);}
+    .lvl-banner.warn{border-color:rgba(255,85,85,.35);background:var(--ddim);}
+    .lvl-banner.info{border-color:rgba(74,158,255,.35);background:var(--bdim);}
+    .bn-inner{flex:1;min-width:0;}
+    .bn-lbl{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px;}
+    .bn-task{font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
+    .bn-time{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--accent);line-height:1;}
+    .bn-time.red{color:var(--danger);}
+    .bn-cta{background:var(--accent);color:#0f0f0f;border:none;border-radius:8px;padding:8px 14px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+    .bn-cta.red{background:var(--danger);color:#fff;}
 
     /* NOTIFY BANNER */
-    .notify-banner { margin: 1.5rem 1.5rem 0; background: var(--accent-dim); border: 1px solid rgba(200,240,74,0.2); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .notify-text { font-size: 13px; color: var(--text); line-height: 1.4; }
-    .notify-btn { background: var(--accent); color: #0f0f0f; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; padding: 7px 14px; border: none; border-radius: 99px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+    .notif-banner{margin:1rem 1.5rem 0;background:var(--adim);border:1px solid rgba(200,240,74,.2);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .notif-text{font-size:13px;color:var(--text);line-height:1.4;}
+    .notif-btn{background:var(--accent);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;padding:7px 14px;border:none;border-radius:99px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+
+    /* DIVIDER & LABELS */
+    .divider{height:1px;background:var(--border);margin:1.75rem 1.5rem;}
+    .sec-hd{display:flex;justify-content:space-between;align-items:center;padding:0 1.5rem;margin-bottom:.75rem;}
+    .sec-lbl{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
+    .sec-act{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);cursor:pointer;background:none;border:none;padding:0;}
 
     /* DAILIES */
-    .dailies { padding: 0 1.5rem; display: flex; flex-direction: column; gap: 2px; }
-    .daily-item { display: flex; align-items: center; gap: 12px; padding: 13px 14px; background: var(--surface); border: 1px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.12s; user-select: none; }
-    .daily-item.done { background: var(--accent-dim); border-color: rgba(200,240,74,0.2); opacity: 0.6; }
-    .daily-check { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.12s; }
-    .daily-item.done .daily-check { background: var(--accent); border-color: var(--accent); color: #0f0f0f; font-size: 11px; }
-    .daily-name { flex: 1; font-size: 14px; color: var(--text); }
-    .daily-item.done .daily-name { text-decoration: line-through; color: var(--muted); }
-    .daily-xp { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; color: var(--accent); white-space: nowrap; }
-    .daily-streak { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); margin-left: 4px; }
-
-    /* DAILY BONUS */
-    .daily-bonus { margin: 8px 1.5rem 0; background: var(--accent-dim); border: 1px solid rgba(200,240,74,0.15); border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
-    .daily-bonus-text { font-size: 12px; color: var(--muted); }
-    .daily-bonus-xp { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--accent); font-weight: 700; }
+    .dailies{padding:0 1.5rem;display:flex;flex-direction:column;gap:2px;}
+    .daily{display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--surface);border:1px solid transparent;border-radius:10px;cursor:pointer;user-select:none;transition:all .12s;}
+    .daily.done{background:var(--adim);border-color:rgba(200,240,74,.2);opacity:.6;}
+    .daily:active{transform:scale(.99);}
+    .d-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;}
+    .daily.done .d-check{background:var(--accent);border-color:var(--accent);color:#0f0f0f;}
+    .d-name{flex:1;font-size:14px;color:var(--text);}
+    .daily.done .d-name{text-decoration:line-through;color:var(--muted);}
+    .d-xp{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);}
+    .daily-bonus{margin:8px 1.5rem 0;background:var(--adim);border:1px solid rgba(200,240,74,.15);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;}
+    .db-text{font-size:12px;color:var(--muted);}
+    .db-xp{font-family:'Space Mono',monospace;font-size:12px;color:var(--accent);font-weight:700;}
 
     /* PRESETS */
-    .presets { padding: 0 1.5rem; display: flex; flex-direction: column; gap: 2px; }
-    .preset { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 13px 14px; background: var(--surface); border: 1px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.12s; user-select: none; }
-    .preset:active { background: var(--accent-dim); border-color: var(--accent); transform: scale(0.99); }
-    .preset-name { font-size: 14px; color: var(--text); flex: 1; }
-    .preset-xp { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: var(--accent); white-space: nowrap; }
-    .preset-edit { background: none; border: none; color: var(--muted); font-size: 13px; cursor: pointer; padding: 4px; flex-shrink: 0; display: none; }
-    .edit-mode .preset-edit { display: block; }
-    .edit-mode .preset:active { transform: none; }
-
-    /* EDIT MODAL */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; display: flex; align-items: flex-end; justify-content: center; }
-    .modal { background: var(--surface); border-radius: 16px 16px 0 0; padding: 1.5rem; width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 12px; }
-    .modal-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-    .modal input { background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px; padding: 12px 14px; border-radius: 10px; outline: none; width: 100%; transition: border-color 0.12s; }
-    .modal input:focus { border-color: var(--accent); }
-    .modal-btns { display: flex; gap: 8px; }
-    .modal-save { flex: 1; background: var(--accent); color: #0f0f0f; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; padding: 12px; border: none; border-radius: 10px; cursor: pointer; }
-    .modal-delete { background: var(--surface2); border: 1px solid var(--border); color: var(--danger); font-family: 'Syne', sans-serif; font-size: 14px; padding: 12px 16px; border-radius: 10px; cursor: pointer; }
-    .modal-cancel { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-family: 'Syne', sans-serif; font-size: 14px; padding: 12px 16px; border-radius: 10px; cursor: pointer; }
+    .presets{padding:0 1.5rem;display:flex;flex-direction:column;gap:2px;}
+    .preset{display:flex;align-items:center;gap:8px;padding:13px 14px;background:var(--surface);border:1px solid transparent;border-radius:10px;cursor:pointer;user-select:none;transition:all .12s;}
+    .preset:active{background:var(--adim);border-color:var(--accent);transform:scale(.99);}
+    .p-name{flex:1;font-size:14px;color:var(--text);}
+    .p-xp{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);white-space:nowrap;}
 
     /* CUSTOM */
-    .custom-wrap { padding: 0 1.5rem; }
-    .custom-row { display: flex; gap: 8px; }
-    .custom-row input { flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px; padding: 12px 14px; border-radius: 10px; outline: none; transition: border-color 0.12s; min-width: 0; }
-    .custom-row input:focus { border-color: var(--accent); }
-    .custom-row input::placeholder { color: var(--muted); }
-    .xp-input { max-width: 80px !important; }
-    .add-btn { background: var(--accent); color: #0f0f0f; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 20px; padding: 0 18px; border: none; border-radius: 10px; cursor: pointer; flex-shrink: 0; line-height: 1; height: 46px; }
-    .add-btn:active { opacity: 0.7; }
+    .custom-wrap{padding:0 1.5rem;}
+    .custom-row{display:flex;gap:8px;}
+    .custom-row input{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-size:14px;padding:12px 14px;border-radius:10px;outline:none;transition:border-color .12s;min-width:0;}
+    .custom-row input:focus{border-color:var(--accent);}
+    .custom-row input::placeholder{color:var(--muted);}
+    .xp-inp{max-width:80px!important;}
+    .add-btn{background:var(--accent);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:20px;padding:0 18px;border:none;border-radius:10px;cursor:pointer;flex-shrink:0;height:46px;}
+    .add-btn:active{opacity:.7;}
 
     /* HISTORY */
-    .history-list { padding: 0 1.5rem; display: flex; flex-direction: column; gap: 2px; }
-    .h-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--surface); border-radius: 8px; }
-    .h-name { font-size: 13px; color: var(--muted); }
-    .h-xp { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--accent); }
+    .hist-list{padding:0 1.5rem;display:flex;flex-direction:column;gap:2px;}
+    .h-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface);border-radius:8px;}
+    .h-name{font-size:13px;color:var(--muted);}
+    .h-xp{font-family:'Space Mono',monospace;font-size:12px;color:var(--accent);}
+
+    /* SETTINGS VIEW */
+    #view-settings{position:fixed;inset:0;background:var(--bg);z-index:20;overflow-y:auto;}
+    .st-header{display:flex;align-items:center;gap:12px;padding:2.5rem 1.5rem 1.5rem;max-width:480px;margin:0 auto;}
+    .back-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:18px;width:36px;height:36px;border-radius:99px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .st-title{font-size:18px;font-weight:700;}
+    .st-body{max-width:480px;margin:0 auto;padding:0 0 5rem;}
+    .st-section{padding:0 1.5rem;}
+    .st-row{display:flex;gap:8px;margin-top:10px;}
+    .st-row input{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-size:14px;padding:12px 14px;border-radius:10px;outline:none;min-width:0;}
+    .st-row input:focus{border-color:var(--accent);}
+    .st-save{background:var(--accent);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;padding:12px 18px;border:none;border-radius:10px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+    .st-item{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface);border-radius:8px;margin-bottom:2px;}
+    .si-name{flex:1;font-size:13px;color:var(--text);}
+    .si-xp{font-family:'Space Mono',monospace;font-size:12px;color:var(--accent);margin-right:4px;}
+    .si-edit{background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:4px 6px;}
+    .danger-btn{width:100%;background:none;border:1px solid rgba(255,85,85,.3);color:var(--danger);font-family:'Syne',sans-serif;font-size:14px;padding:14px;border-radius:10px;cursor:pointer;}
+    .danger-btn:active{background:var(--ddim);}
+
+    /* MODALS */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:30;display:flex;align-items:flex-end;justify-content:center;}
+    .modal{background:var(--surface);border-radius:20px 20px 0 0;padding:1.5rem 1.5rem 2.5rem;width:100%;max-width:480px;display:flex;flex-direction:column;gap:12px;max-height:90vh;overflow-y:auto;}
+    .m-handle{width:36px;height:4px;background:var(--border);border-radius:99px;margin:0 auto 4px;flex-shrink:0;}
+    .m-emoji{font-size:30px;text-align:center;}
+    .m-title{font-size:18px;font-weight:700;color:var(--text);text-align:center;}
+    .m-sub{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);text-align:center;}
+    .m-lbl{font-size:11px;color:var(--muted);margin-bottom:-6px;}
+    .modal input{background:var(--s2);border:1px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-size:14px;padding:12px 14px;border-radius:10px;outline:none;width:100%;}
+    .modal input:focus{border-color:var(--accent);}
+    .modal input::placeholder{color:var(--muted);}
+    .m-btns{display:flex;gap:8px;}
+    .m-save{flex:1;background:var(--accent);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;padding:13px;border:none;border-radius:10px;cursor:pointer;}
+    .m-del{background:var(--s2);border:1px solid rgba(255,85,85,.3);color:var(--danger);font-family:'Syne',sans-serif;font-size:14px;padding:13px 16px;border-radius:10px;cursor:pointer;}
+    .m-cancel{background:var(--s2);border:1px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:14px;padding:13px;border-radius:10px;cursor:pointer;text-align:center;width:100%;}
+
+    /* LEVEL UP OPTIONS */
+    .lu-opt{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;}
+    .lu-opt-lbl{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
+    .lu-opt-task{font-size:15px;color:var(--text);font-weight:700;line-height:1.3;}
+    .lu-opt-meta{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
+    .lu-btn{background:var(--accent);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;padding:12px;border:none;border-radius:10px;cursor:pointer;text-align:center;}
+    .lu-btn:active{opacity:.8;}
+    .lu-btn.blue{background:var(--blue);color:#fff;}
+    .lu-btn.dim{background:var(--surface);border:1px solid var(--border);color:var(--muted);cursor:pointer;}
+    .lu-btn.locked{background:var(--surface);border:1px solid var(--border);color:var(--muted);cursor:not-allowed;opacity:.6;}
+    .lu-sep{display:flex;align-items:center;gap:8px;}
+    .lu-sep-line{flex:1;height:1px;background:var(--border);}
+    .lu-sep-txt{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);}
+
+    /* CONFIRM */
+    .conf-timer{font-family:'Space Mono',monospace;font-size:44px;font-weight:700;color:var(--accent);text-align:center;line-height:1;}
+    .conf-timer.red{color:var(--danger);}
+    .conf-task-box{background:var(--s2);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--text);line-height:1.5;}
+    .conf-yes{background:var(--accent);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;padding:14px;border:none;border-radius:10px;cursor:pointer;}
+    .conf-no{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-size:13px;padding:12px;border-radius:10px;cursor:pointer;text-align:center;}
+
+    /* SETUP */
+    .setup-grp{background:var(--s2);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;}
+    .setup-grp-lbl{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;}
+    .time-row{display:flex;gap:8px;align-items:center;}
+    .time-row input{flex:1;}
+    .time-lbl{font-size:12px;color:var(--muted);white-space:nowrap;}
 
     /* TOAST */
-    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--accent); color: #0f0f0f; font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; padding: 10px 22px; border-radius: 99px; white-space: nowrap; transition: transform 0.3s cubic-bezier(.4,0,.2,1); z-index: 99; pointer-events: none; }
-    .toast.show { transform: translateX(-50%) translateY(0); }
-    .hidden { display: none !important; }
+    .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--accent);color:#0f0f0f;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;padding:10px 22px;border-radius:99px;white-space:nowrap;transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:99;pointer-events:none;}
+    .toast.show{transform:translateX(-50%) translateY(0);}
   </style>
 </head>
 <body>
-<div class="app">
 
-  <!-- HEADER -->
+<!-- MAIN VIEW -->
+<div id="view-main">
   <div class="header">
     <div class="header-top">
       <div class="level-pill" id="level-pill">Уровень 1</div>
       <div class="header-actions">
-        <button class="icon-btn" id="notif-btn" title="Уведомления">🔔</button>
-        <button class="icon-btn" id="reset-btn" title="Сброс">↺</button>
+        <button class="icon-btn" id="notif-btn">🔔</button>
+        <button class="icon-btn" id="settings-btn">⚙</button>
       </div>
     </div>
     <div class="xp-num" id="xp-num">0<span>XP</span></div>
-    <div class="xp-caption" id="xp-caption">сегодня: 0 XP</div>
+    <div class="xp-caption" id="xp-caption">сегодня: 0 / 500 · банк: 0</div>
   </div>
 
-  <!-- BAR -->
   <div class="bar-section">
-    <div class="bar-bg"><div class="bar-fill" id="bar" style="width:0%"></div></div>
+    <div class="bar-bg">
+      <div class="bar-fill" id="bar-fill" style="width:0%"></div>
+      <div class="bar-over" id="bar-over" style="width:0%"></div>
+    </div>
     <div class="bar-meta">
-      <span id="bar-cur">0 / 500</span>
-      <span id="bar-left">осталось 500 XP</span>
+      <span id="bar-cur">0 / 500 XP</span>
+      <span class="bar-bank" id="bar-bank">банк: 0 XP</span>
     </div>
   </div>
 
-  <!-- NOTIFY BANNER -->
-  <div id="notify-banner" class="notify-banner hidden">
-    <div class="notify-text">Включи уведомления — буду напоминать каждый день</div>
-    <button class="notify-btn" id="notify-allow-btn">Включить</button>
+  <div id="lvl-banner" class="lvl-banner hidden">
+    <div class="bn-inner">
+      <div class="bn-lbl" id="bn-lbl">–</div>
+      <div class="bn-task" id="bn-task"></div>
+      <div class="bn-time" id="bn-time"></div>
+    </div>
+    <button class="bn-cta" id="bn-cta">→</button>
   </div>
 
-  <!-- DAILIES -->
+  <div id="notif-banner" class="notif-banner hidden">
+    <div class="notif-text">Включи уведомления — напомню про XP</div>
+    <button class="notif-btn" id="notif-allow">Включить</button>
+  </div>
+
   <div class="divider"></div>
-  <div class="sec-header">
-    <span class="sec-label">дейлики</span>
-    <span class="sec-label" id="daily-count" style="color:var(--muted)">0 / 0</span>
+  <div class="sec-hd">
+    <span class="sec-lbl">дейлики</span>
+    <span class="sec-lbl" id="daily-count" style="color:var(--muted)">0/0</span>
   </div>
   <div class="dailies" id="dailies"></div>
-  <div class="daily-bonus" id="daily-bonus">
-    <span class="daily-bonus-text">Бонус за все дейлики</span>
-    <span class="daily-bonus-xp" id="daily-bonus-xp">+100 XP</span>
+  <div class="daily-bonus" id="daily-bonus" style="opacity:.4">
+    <span class="db-text">Бонус за все дейлики</span>
+    <span class="db-xp">+100 XP</span>
   </div>
 
-  <!-- ЗАДАЧИ -->
   <div class="divider"></div>
-  <div class="sec-header">
-    <span class="sec-label">задачи</span>
-    <button class="sec-action" id="edit-toggle">✎ редактировать</button>
-  </div>
+  <div class="sec-hd"><span class="sec-lbl">задачи</span></div>
   <div class="presets" id="presets"></div>
 
-  <!-- СВОЯ ЗАДАЧА -->
   <div class="divider"></div>
-  <div class="sec-header"><span class="sec-label">своя задача</span></div>
+  <div class="sec-hd"><span class="sec-lbl">своя задача</span></div>
   <div class="custom-wrap">
     <div class="custom-row">
-      <input type="text" id="task-name" placeholder="Что сделал?"/>
-      <input type="number" id="task-xp" placeholder="XP" min="1" class="xp-input"/>
+      <input type="text" id="t-name" placeholder="Что сделал?"/>
+      <input type="number" id="t-xp" placeholder="XP" min="1" class="xp-inp"/>
       <button class="add-btn" id="add-btn">+</button>
     </div>
   </div>
 
-  <!-- ИСТОРИЯ -->
   <div class="divider hidden" id="hdiv"></div>
-  <div class="sec-header hidden" id="hlabel"><span class="sec-label">история</span></div>
-  <div class="history-list" id="history-list"></div>
-
+  <div class="sec-hd hidden" id="hlbl"><span class="sec-lbl">история</span></div>
+  <div class="hist-list" id="hist-list"></div>
 </div>
 
-<!-- EDIT MODAL -->
-<div class="modal-overlay hidden" id="modal">
-  <div class="modal">
-    <div class="modal-title" id="modal-title">Редактировать задачу</div>
-    <input type="text" id="modal-name" placeholder="Название"/>
-    <input type="number" id="modal-xp" placeholder="XP" min="1"/>
-    <div class="modal-btns">
-      <button class="modal-save" id="modal-save">Сохранить</button>
-      <button class="modal-delete" id="modal-delete">Удалить</button>
-      <button class="modal-cancel" id="modal-cancel">✕</button>
+<!-- SETTINGS VIEW -->
+<div id="view-settings" class="hidden">
+  <div class="st-header">
+    <button class="back-btn" id="st-back">←</button>
+    <span class="st-title">Настройки</span>
+  </div>
+  <div class="st-body">
+    <div class="st-section">
+      <div class="sec-lbl" style="padding:0">Дневная цель (XP)</div>
+      <div class="st-row">
+        <input type="number" id="st-goal" min="1" placeholder="500"/>
+        <button class="st-save" id="st-goal-save">Сохранить</button>
+      </div>
     </div>
+    <div class="divider"></div>
+    <div class="sec-hd">
+      <span class="sec-lbl">дейлики</span>
+      <button class="sec-act" id="add-daily-btn">+ добавить</button>
+    </div>
+    <div style="padding:0 1.5rem" id="st-dailies"></div>
+    <div class="divider"></div>
+    <div class="sec-hd">
+      <span class="sec-lbl">задачи</span>
+      <button class="sec-act" id="add-preset-btn">+ добавить</button>
+    </div>
+    <div style="padding:0 1.5rem" id="st-presets"></div>
+    <div class="divider"></div>
+    <div class="st-section">
+      <button class="danger-btn" id="reset-btn">Сбросить весь прогресс</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: LEVEL UP -->
+<div id="m-levelup" class="overlay hidden">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div class="m-emoji">🏆</div>
+    <div class="m-title">Дневная цель выполнена!</div>
+    <div class="m-sub" id="lu-sub">Уровень 1 → 2</div>
+    <div class="lu-opt" id="lu-task-opt">
+      <div class="lu-opt-lbl">Выполни задание</div>
+      <div class="lu-opt-task" id="lu-task-txt">–</div>
+      <div class="lu-opt-meta" id="lu-task-meta">–</div>
+      <div id="lu-task-btn"></div>
+    </div>
+    <div class="lu-sep"><div class="lu-sep-line"></div><span class="lu-sep-txt">или</span><div class="lu-sep-line"></div></div>
+    <div class="lu-opt">
+      <div class="lu-opt-lbl">Пропустить за XP из банка</div>
+      <div class="lu-opt-meta" id="lu-bank-meta">В банке: 0 XP · нужно 500</div>
+      <div id="lu-skip-btn"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONFIRM -->
+<div id="m-confirm" class="overlay hidden">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div class="m-emoji">⏰</div>
+    <div class="m-title">Задание выполнено?</div>
+    <div class="conf-task-box" id="conf-task"></div>
+    <div class="conf-timer" id="conf-timer">02:00:00</div>
+    <button class="conf-yes" id="conf-yes">Да, выполнено →</button>
+    <button class="conf-no" id="conf-no">Нет, ещё работаю</button>
+  </div>
+</div>
+
+<!-- MODAL: SETUP TASKS -->
+<div id="m-setup" class="overlay hidden">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div class="m-title">Задай цели</div>
+    <div class="m-sub">Что нужно сделать чтобы повысить уровень?</div>
+    <div id="setup-fields" style="display:flex;flex-direction:column;gap:12px;"></div>
+    <button class="m-save" id="setup-save">Сохранить</button>
+    <button class="m-cancel" id="setup-skip">Позже</button>
+  </div>
+</div>
+
+<!-- MODAL: EDIT ITEM -->
+<div id="m-edit" class="overlay hidden">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div class="m-title" id="edit-title">Редактировать</div>
+    <input type="text" id="edit-name" placeholder="Название"/>
+    <input type="number" id="edit-xp" placeholder="XP" min="1"/>
+    <div class="m-btns">
+      <button class="m-save" id="edit-save">Сохранить</button>
+      <button class="m-del" id="edit-del">Удалить</button>
+    </div>
+    <button class="m-cancel" id="edit-cancel">Отмена</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const XP_PER_LEVEL = 500;
+// ===== CONSTANTS =====
 const DAILY_BONUS = 100;
+const SKIP_COST = 500;
+const CONFIRM_MS = 2 * 60 * 60 * 1000;
 
-const DEFAULT_PRESETS = [
-  { name: "Постирал вещи", xp: 25 },
-  { name: "Приготовил еду", xp: 25 },
-  { name: "Зарядка / разминка", xp: 50 },
-  { name: "Уборка", xp: 75 },
-  { name: "Учёба / работа 1ч", xp: 100 },
-  { name: "Важная задача", xp: 125 },
-  { name: "Сложное дело", xp: 150 },
+const DEF_PRESETS = [
+  {name:"Постирал вещи",xp:25},{name:"Приготовил еду",xp:25},
+  {name:"Зарядка / разминка",xp:50},{name:"Уборка",xp:75},
+  {name:"Учёба / работа 1ч",xp:100},{name:"Важная задача",xp:125},{name:"Сложное дело",xp:150}
+];
+const DEF_DAILIES = [
+  {name:"Выпил воду утром",xp:10},{name:"Зарядка",xp:25},
+  {name:"Прочитал что-то полезное",xp:20},{name:"Лёг спать вовремя",xp:15}
 ];
 
-const DEFAULT_DAILIES = [
-  { name: "Выпил воду утром", xp: 10 },
-  { name: "Зарядка", xp: 25 },
-  { name: "Прочитал что-то полезное", xp: 20 },
-  { name: "Лёг спать вовремя", xp: 15 },
-];
-
-function loadState() {
-  return JSON.parse(localStorage.getItem('xp_state') || 'null') || {
-    totalXP: 0, todayXP: 0, lastDate: '', history: []
-  };
-}
-function loadPresets() {
-  return JSON.parse(localStorage.getItem('xp_presets') || 'null') || DEFAULT_PRESETS;
-}
-function loadDailies() {
-  return JSON.parse(localStorage.getItem('xp_dailies') || 'null') || DEFAULT_DAILIES;
-}
-function loadDailyProgress() {
-  const today = new Date().toDateString();
-  const saved = JSON.parse(localStorage.getItem('xp_daily_progress') || 'null');
-  if (!saved || saved.date !== today) return { date: today, done: [], bonusGiven: false };
-  return saved;
+// ===== STATE =====
+function defState() {
+  return {totalXP:0,todayXP:0,bankXP:0,lastDate:'',history:[],
+    level:1,dailyGoal:500,dailyFilled:false,
+    levelUpStatus:'none', // none|available|timer_running|confirm_window|failed_today
+    timerEnd:null,confirmDeadline:null,
+    levelTasks:{}, // {"2":{task,minutes}}
+    currentTaskLevel:null};
 }
 
-let state = loadState();
-let presets = loadPresets();
-let dailies = loadDailies();
-let dailyProgress = loadDailyProgress();
+let S = JSON.parse(localStorage.getItem('xpv4')||'null') || defState();
+let presets = JSON.parse(localStorage.getItem('xp_pre')||'null') || [...DEF_PRESETS];
+let dailies = JSON.parse(localStorage.getItem('xp_dai')||'null') || [...DEF_DAILIES];
+let dp = loadDP(); // daily progress
 
-function saveState() { localStorage.setItem('xp_state', JSON.stringify(state)); }
-function savePresets() { localStorage.setItem('xp_presets', JSON.stringify(presets)); }
-function saveDailies() { localStorage.setItem('xp_dailies', JSON.stringify(dailies)); }
-function saveDailyProgress() { localStorage.setItem('xp_daily_progress', JSON.stringify(dailyProgress)); }
+function save(){localStorage.setItem('xpv4',JSON.stringify(S));}
+function savePre(){localStorage.setItem('xp_pre',JSON.stringify(presets));}
+function saveDai(){localStorage.setItem('xp_dai',JSON.stringify(dailies));}
+function saveDP(){localStorage.setItem('xp_dpv4',JSON.stringify(dp));}
+function loadDP(){
+  const t=new Date().toDateString();
+  const d=JSON.parse(localStorage.getItem('xp_dpv4')||'null');
+  if(!d||d.date!==t) return{date:t,done:[],bonusGiven:false};
+  return d;
+}
 
-function resetDayIfNeeded() {
-  const today = new Date().toDateString();
-  if (state.lastDate !== today) {
-    state.todayXP = 0;
-    state.lastDate = today;
-    saveState();
+// ===== DAY RESET =====
+function dayReset(){
+  const t=new Date().toDateString();
+  if(S.lastDate===t) return;
+  S.todayXP=0; S.dailyFilled=false; S.lastDate=t;
+  if(S.levelUpStatus==='failed_today') S.levelUpStatus='none';
+  dp={date:t,done:[],bonusGiven:false};
+  saveDP(); save();
+}
+
+// ===== ADD XP =====
+function addXP(name,xp,silent){
+  dayReset();
+  const prev=S.todayXP;
+  S.totalXP+=xp; S.todayXP+=xp;
+  // bank overflow
+  const prevOver=Math.max(0,prev-S.dailyGoal);
+  const newOver=Math.max(0,S.todayXP-S.dailyGoal);
+  S.bankXP+=newOver-prevOver;
+  S.history.push({name,xp});
+  if(S.history.length>100) S.history=S.history.slice(-100);
+  const filled=!S.dailyFilled && S.todayXP>=S.dailyGoal && S.levelUpStatus==='none';
+  if(filled){
+    S.dailyFilled=true; S.levelUpStatus='available';
+    save(); render();
+    showToast('🎯 Дневная цель! Повышай уровень!');
+    setTimeout(()=>openLU(),700);
+    return;
   }
-  if (dailyProgress.date !== today) {
-    dailyProgress = { date: today, done: [], bonusGiven: false };
-    saveDailyProgress();
-  }
-}
-
-// ---- RENDER ----
-function render() {
-  resetDayIfNeeded();
-  const level = Math.floor(state.totalXP / XP_PER_LEVEL) + 1;
-  const xpInLevel = state.totalXP % XP_PER_LEVEL;
-  const pct = Math.round((xpInLevel / XP_PER_LEVEL) * 100);
-  const left = XP_PER_LEVEL - xpInLevel;
-
-  document.getElementById('level-pill').textContent = 'Уровень ' + level;
-  document.getElementById('xp-num').innerHTML = state.totalXP + '<span>XP</span>';
-  document.getElementById('xp-caption').textContent = 'сегодня: ' + state.todayXP + ' XP';
-  document.getElementById('bar').style.width = pct + '%';
-  document.getElementById('bar-cur').textContent = xpInLevel + ' / ' + XP_PER_LEVEL;
-  document.getElementById('bar-left').textContent = 'осталось ' + left + ' XP';
-
-  renderDailies();
-  renderPresets();
-  renderHistory();
-}
-
-function renderDailies() {
-  const el = document.getElementById('dailies');
-  const doneCount = dailyProgress.done.length;
-  document.getElementById('daily-count').textContent = doneCount + ' / ' + dailies.length;
-
-  const totalBonus = dailies.reduce((s, d) => s + d.xp, 0) + DAILY_BONUS;
-  document.getElementById('daily-bonus-xp').textContent = '+' + DAILY_BONUS + ' XP бонус';
-
-  el.innerHTML = dailies.map((d, i) => {
-    const done = dailyProgress.done.includes(i);
-    return `<div class="daily-item${done ? ' done' : ''}" data-i="${i}">
-      <div class="daily-check">${done ? '✓' : ''}</div>
-      <span class="daily-name">${d.name}</span>
-      <span class="daily-xp">+${d.xp}</span>
-    </div>`;
-  }).join('');
-
-  el.querySelectorAll('.daily-item').forEach(el => {
-    el.addEventListener('click', () => toggleDaily(parseInt(el.dataset.i)));
-  });
-
-  const allDone = dailyProgress.done.length === dailies.length;
-  const bonusEl = document.getElementById('daily-bonus');
-  bonusEl.style.opacity = allDone ? '1' : '0.4';
-  if (allDone && !dailyProgress.bonusGiven) {
-    dailyProgress.bonusGiven = true;
-    saveDailyProgress();
-    addXP('🎯 Все дейлики выполнены!', DAILY_BONUS, true);
-  }
-}
-
-function toggleDaily(i) {
-  if (dailyProgress.done.includes(i)) return; // no undo
-  dailyProgress.done.push(i);
-  saveDailyProgress();
-  addXP(dailies[i].name, dailies[i].xp);
-}
-
-function renderPresets() {
-  const el = document.getElementById('presets');
-  const editing = el.classList.contains('edit-mode');
-  el.innerHTML = presets.map((p, i) =>
-    `<div class="preset" data-i="${i}">
-      <span class="preset-name">${p.name}</span>
-      <span class="preset-xp">+${p.xp}</span>
-      <button class="preset-edit" data-i="${i}">✎</button>
-    </div>`
-  ).join('');
-
-  el.querySelectorAll('.preset').forEach(btn => {
-    btn.addEventListener('click', e => {
-      if (e.target.classList.contains('preset-edit')) return;
-      if (el.classList.contains('edit-mode')) return;
-      addXP(presets[parseInt(btn.dataset.i)].name, presets[parseInt(btn.dataset.i)].xp);
-    });
-  });
-  el.querySelectorAll('.preset-edit').forEach(btn => {
-    btn.addEventListener('click', e => { e.stopPropagation(); openModal(parseInt(btn.dataset.i)); });
-  });
-}
-
-function renderHistory() {
-  const hl = document.getElementById('history-list');
-  if (state.history.length > 0) {
-    document.getElementById('hdiv').classList.remove('hidden');
-    document.getElementById('hlabel').classList.remove('hidden');
-    hl.innerHTML = state.history.slice().reverse().slice(0, 10).map(h =>
-      `<div class="h-item"><span class="h-name">${h.name}</span><span class="h-xp">+${h.xp}</span></div>`
-    ).join('');
-  }
-}
-
-// ---- XP ----
-function addXP(name, xp, silent) {
-  const prevLevel = Math.floor(state.totalXP / XP_PER_LEVEL) + 1;
-  state.totalXP += xp;
-  state.todayXP += xp;
-  state.history.push({ name, xp });
-  if (state.history.length > 50) state.history = state.history.slice(-50);
-  saveState();
-  const newLevel = Math.floor(state.totalXP / XP_PER_LEVEL) + 1;
-  if (newLevel > prevLevel) showToast('🎉 Уровень ' + newLevel + '!');
-  else if (!silent) showToast('+' + xp + ' XP');
+  save();
+  if(!silent) showToast('+'+xp+' XP');
   render();
 }
 
-// ---- EDIT MODE ----
-let editMode = false;
-document.getElementById('edit-toggle').addEventListener('click', () => {
-  editMode = !editMode;
-  document.getElementById('presets').classList.toggle('edit-mode', editMode);
-  document.getElementById('edit-toggle').textContent = editMode ? '✓ готово' : '✎ редактировать';
-});
-
-// ---- MODAL ----
-let editingIndex = null;
-function openModal(i) {
-  editingIndex = i;
-  const p = i === -1 ? { name: '', xp: '' } : presets[i];
-  document.getElementById('modal-title').textContent = i === -1 ? 'Новая задача' : 'Редактировать';
-  document.getElementById('modal-name').value = p.name;
-  document.getElementById('modal-xp').value = p.xp;
-  document.getElementById('modal-delete').style.display = i === -1 ? 'none' : '';
-  document.getElementById('modal').classList.remove('hidden');
-  setTimeout(() => document.getElementById('modal-name').focus(), 100);
+// ===== UTILS =====
+function hms(ms){
+  if(ms<=0) return'00:00:00';
+  const s=Math.floor(ms/1000);
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
+  return pad(h)+':'+pad(m)+':'+pad(sec);
 }
-function closeModal() { document.getElementById('modal').classList.add('hidden'); editingIndex = null; }
-document.getElementById('modal-cancel').addEventListener('click', closeModal);
-document.getElementById('modal-overlay') && document.getElementById('modal-overlay').addEventListener('click', closeModal);
-document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) closeModal(); });
+function pad(n){return String(n).padStart(2,'0');}
+function fmtMin(m){if(m<60) return'~'+m+' мин';const h=Math.floor(m/60),r=m%60;return'~'+h+'ч'+(r?' '+r+'м':'');}
 
-document.getElementById('modal-save').addEventListener('click', () => {
-  const name = document.getElementById('modal-name').value.trim();
-  const xp = parseInt(document.getElementById('modal-xp').value) || 0;
-  if (!name || xp <= 0) { showToast('Заполни поля'); return; }
-  if (editingIndex === -1) presets.push({ name, xp });
-  else presets[editingIndex] = { name, xp };
-  savePresets();
-  closeModal();
+// ===== RENDER =====
+function render(){
+  dayReset();
+  const{totalXP,todayXP,bankXP,level,dailyGoal}=S;
+  document.getElementById('level-pill').textContent='Уровень '+level;
+  document.getElementById('xp-num').innerHTML=totalXP+'<span>XP</span>';
+  document.getElementById('xp-caption').textContent='сегодня: '+todayXP+' / '+dailyGoal+' · банк: '+bankXP+' XP';
+  const mainPct=Math.min(100,Math.round(todayXP/dailyGoal*100));
+  const overXP=Math.max(0,todayXP-dailyGoal);
+  const overPct=Math.min(100,Math.round(overXP/dailyGoal*100));
+  document.getElementById('bar-fill').style.width=mainPct+'%';
+  document.getElementById('bar-over').style.width=overPct+'%';
+  document.getElementById('bar-cur').textContent=Math.min(todayXP,dailyGoal)+' / '+dailyGoal+' XP';
+  document.getElementById('bar-bank').textContent='банк: '+bankXP+' XP';
+  renderBanner();
+  renderDailies();
   renderPresets();
-});
-
-document.getElementById('modal-delete').addEventListener('click', () => {
-  if (editingIndex === null || editingIndex === -1) return;
-  presets.splice(editingIndex, 1);
-  savePresets();
-  closeModal();
-  renderPresets();
-});
-
-// + добавить задачу кнопка
-document.getElementById('add-btn').addEventListener('click', () => {
-  const name = document.getElementById('task-name').value.trim() || 'Своя задача';
-  const xp = parseInt(document.getElementById('task-xp').value) || 0;
-  if (xp <= 0) { showToast('Укажи XP'); return; }
-  document.getElementById('task-name').value = '';
-  document.getElementById('task-xp').value = '';
-  addXP(name, xp);
-});
-
-// Reset
-document.getElementById('reset-btn').addEventListener('click', () => {
-  if (!confirm('Сбросить весь прогресс?')) return;
-  state = { totalXP: 0, todayXP: 0, lastDate: new Date().toDateString(), history: [] };
-  dailyProgress = { date: new Date().toDateString(), done: [], bonusGiven: false };
-  saveState(); saveDailyProgress(); render();
-});
-
-// Toast
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+  renderHist();
 }
+
+function renderBanner(){
+  const el=document.getElementById('lvl-banner');
+  const cta=document.getElementById('bn-cta');
+  const timeEl=document.getElementById('bn-time');
+  el.className='lvl-banner'; cta.style.display=''; cta.className='bn-cta';
+  const{levelUpStatus,timerEnd,confirmDeadline,currentTaskLevel}=S;
+  if(levelUpStatus==='available'){
+    el.classList.add('ok');
+    document.getElementById('bn-lbl').textContent='дневная цель выполнена!';
+    document.getElementById('bn-task').textContent='Нажми чтобы повысить уровень';
+    timeEl.textContent=''; cta.textContent='🏆';
+  } else if(levelUpStatus==='timer_running'&&timerEnd){
+    const rem=timerEnd-Date.now();
+    const task=S.levelTasks[currentTaskLevel];
+    el.classList.add('info');
+    document.getElementById('bn-lbl').textContent='таймер · уровень '+currentTaskLevel;
+    document.getElementById('bn-task').textContent=task?task.task:'';
+    timeEl.textContent=hms(rem); timeEl.className='bn-time';
+    cta.textContent='→';
+  } else if(levelUpStatus==='confirm_window'&&confirmDeadline){
+    const rem=confirmDeadline-Date.now();
+    const urgent=rem<30*60*1000;
+    el.classList.add(urgent?'warn':'ok');
+    document.getElementById('bn-lbl').textContent='подтверди выполнение!';
+    const task=S.levelTasks[currentTaskLevel];
+    document.getElementById('bn-task').textContent=task?task.task:'';
+    timeEl.textContent=hms(rem); timeEl.className=urgent?'bn-time red':'bn-time';
+    cta.textContent='Подтвердить'; if(urgent) cta.classList.add('red');
+  } else if(levelUpStatus==='failed_today'){
+    el.classList.add('warn');
+    document.getElementById('bn-lbl').textContent='не подтверждено';
+    document.getElementById('bn-task').textContent='Заполни бар завтра для новой попытки';
+    timeEl.textContent=''; cta.style.display='none';
+  } else {
+    el.classList.add('hidden');
+  }
+}
+
+function renderDailies(){
+  const el=document.getElementById('dailies');
+  const done=dp.done.length;
+  document.getElementById('daily-count').textContent=done+'/'+dailies.length;
+  el.innerHTML=dailies.map((d,i)=>{
+    const isDone=dp.done.includes(i);
+    return`<div class="daily${isDone?' done':''}" data-i="${i}">
+      <div class="d-check">${isDone?'✓':''}</div>
+      <span class="d-name">${d.name}</span>
+      <span class="d-xp">+${d.xp}</span>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('.daily').forEach(el=>el.addEventListener('click',()=>tapDaily(+el.dataset.i)));
+  const allDone=dailies.length>0&&done===dailies.length;
+  document.getElementById('daily-bonus').style.opacity=allDone?'1':'.4';
+  if(allDone&&!dp.bonusGiven){dp.bonusGiven=true;saveDP();addXP('🎯 Все дейлики!',DAILY_BONUS,true);showToast('🎯 +'+DAILY_BONUS+' XP бонус!');}
+}
+function tapDaily(i){
+  if(dp.done.includes(i)) return;
+  dp.done.push(i); saveDP(); addXP(dailies[i].name,dailies[i].xp);
+}
+
+function renderPresets(){
+  const el=document.getElementById('presets');
+  el.innerHTML=presets.map((p,i)=>`<div class="preset" data-i="${i}"><span class="p-name">${p.name}</span><span class="p-xp">+${p.xp}</span></div>`).join('');
+  el.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>addXP(presets[+b.dataset.i].name,presets[+b.dataset.i].xp)));
+}
+
+function renderHist(){
+  const hl=document.getElementById('hist-list');
+  if(S.history.length>0){
+    document.getElementById('hdiv').classList.remove('hidden');
+    document.getElementById('hlbl').classList.remove('hidden');
+    hl.innerHTML=S.history.slice().reverse().slice(0,10).map(h=>`<div class="h-item"><span class="h-name">${h.name}</span><span class="h-xp">+${h.xp}</span></div>`).join('');
+  }
+}
+
+function renderStLists(){
+  const dl=document.getElementById('st-dailies');
+  dl.innerHTML=dailies.map((d,i)=>`<div class="st-item"><span class="si-name">${d.name}</span><span class="si-xp">+${d.xp}</span><button class="si-edit" data-t="daily" data-i="${i}">✎</button></div>`).join('')||'<div style="padding:10px 0;font-size:13px;color:var(--muted)">Пусто</div>';
+  const pl=document.getElementById('st-presets');
+  pl.innerHTML=presets.map((p,i)=>`<div class="st-item"><span class="si-name">${p.name}</span><span class="si-xp">+${p.xp}</span><button class="si-edit" data-t="preset" data-i="${i}">✎</button></div>`).join('')||'<div style="padding:10px 0;font-size:13px;color:var(--muted)">Пусто</div>';
+  document.querySelectorAll('.si-edit').forEach(b=>b.addEventListener('click',()=>openEdit(b.dataset.t,+b.dataset.i)));
+}
+
+// ===== LEVEL UP =====
+function openLU(){
+  const nxt=S.level+1;
+  const task=S.levelTasks[nxt];
+  document.getElementById('lu-sub').textContent='Уровень '+S.level+' → '+nxt;
+  // Task option
+  if(task){
+    document.getElementById('lu-task-txt').textContent=task.task;
+    document.getElementById('lu-task-meta').textContent=fmtMin(task.minutes||60);
+    document.getElementById('lu-task-btn').innerHTML='<button class="lu-btn" id="lu-start-btn">Начать таймер →</button>';
+    document.getElementById('lu-start-btn').onclick=()=>{closeM('m-levelup');startTimer(nxt);};
+  } else {
+    document.getElementById('lu-task-txt').textContent='Задание не задано';
+    document.getElementById('lu-task-meta').textContent='Нужно задать задание для этого уровня';
+    document.getElementById('lu-task-btn').innerHTML='<button class="lu-btn dim" id="lu-set-btn">Задать задание →</button>';
+    document.getElementById('lu-set-btn').onclick=()=>{closeM('m-levelup');openSetup(()=>openLU());};
+  }
+  // Skip option
+  document.getElementById('lu-bank-meta').textContent='В банке: '+S.bankXP+' XP · нужно '+SKIP_COST;
+  const can=S.bankXP>=SKIP_COST;
+  document.getElementById('lu-skip-btn').innerHTML=can
+    ?'<button class="lu-btn blue" id="lu-skip">Пропустить за '+SKIP_COST+' XP из банка</button>'
+    :'<button class="lu-btn locked">🔒 Ещё '+(SKIP_COST-S.bankXP)+' XP в банке</button>';
+  if(can) document.getElementById('lu-skip').onclick=()=>{closeM('m-levelup');skipLvl();};
+  openM('m-levelup');
+}
+
+function startTimer(lvl){
+  S.levelUpStatus='timer_running';
+  S.currentTaskLevel=lvl;
+  const t=S.levelTasks[lvl];
+  S.timerEnd=Date.now()+(t?t.minutes:60)*60*1000;
+  S.confirmDeadline=null;
+  save(); render(); showToast('Таймер запущен!');
+}
+
+function skipLvl(){
+  if(S.bankXP<SKIP_COST) return;
+  S.bankXP-=SKIP_COST;
+  doLevelUp();
+}
+
+function doLevelUp(){
+  S.level++;
+  S.levelUpStatus='none';
+  S.dailyFilled=S.todayXP>=S.dailyGoal;
+  S.timerEnd=null; S.confirmDeadline=null; S.currentTaskLevel=null;
+  save(); render();
+  showToast('🎉 Уровень '+S.level+'!');
+  setTimeout(checkSetup,800);
+}
+
+function checkSetup(){
+  const n1=S.level+1,n2=S.level+2;
+  if(!S.levelTasks[n1]||!S.levelTasks[n2]) openSetup(null);
+}
+
+// ===== SETUP MODAL =====
+let setupCb=null;
+function openSetup(cb){
+  setupCb=cb;
+  const need=[];
+  if(!S.levelTasks[S.level+1]) need.push(S.level+1);
+  if(!S.levelTasks[S.level+2]) need.push(S.level+2);
+  if(!need.length){if(cb) cb(); return;}
+  document.getElementById('setup-fields').innerHTML=need.map(lvl=>`
+    <div class="setup-grp">
+      <div class="setup-grp-lbl">Задание для уровня ${lvl}</div>
+      <input type="text" id="sf-task-${lvl}" placeholder="Что нужно сделать?"/>
+      <div class="time-row">
+        <input type="number" id="sf-min-${lvl}" placeholder="60" min="1" max="720"/>
+        <span class="time-lbl">мин на выполнение</span>
+      </div>
+    </div>`).join('');
+  document.getElementById('setup-save').onclick=()=>{
+    let ok=true;
+    need.forEach(lvl=>{
+      const task=(document.getElementById('sf-task-'+lvl).value||'').trim();
+      const mins=parseInt(document.getElementById('sf-min-'+lvl).value)||60;
+      if(!task){ok=false;return;}
+      S.levelTasks[lvl]={task,minutes:mins};
+    });
+    if(!ok){showToast('Заполни задания');return;}
+    save(); closeM('m-setup');
+    if(setupCb){setupCb();setupCb=null;}
+  };
+  openM('m-setup');
+}
+
+// ===== TIMER INTERVAL =====
+setInterval(()=>{
+  if(!['timer_running','confirm_window'].includes(S.levelUpStatus)) return;
+  const now=Date.now();
+  if(S.levelUpStatus==='timer_running'&&S.timerEnd&&now>=S.timerEnd){
+    S.levelUpStatus='confirm_window';
+    S.confirmDeadline=S.timerEnd+CONFIRM_MS;
+    save();
+    if(now<S.confirmDeadline){
+      const rem=Math.round((S.confirmDeadline-now)/60000);
+      sendNotif('Время на задание вышло!','Подтверди выполнение. Осталось '+rem+' мин.');
+      openConfirm();
+    } else {
+      S.levelUpStatus='failed_today'; S.confirmDeadline=null; save();
+    }
+    renderBanner(); return;
+  }
+  if(S.levelUpStatus==='confirm_window'&&S.confirmDeadline){
+    if(now>=S.confirmDeadline){
+      S.levelUpStatus='failed_today'; S.confirmDeadline=null; save();
+      renderBanner(); closeM('m-confirm'); showToast('Время вышло. Жди завтра');
+    } else {
+      renderBanner();
+      const cm=document.getElementById('m-confirm');
+      if(!cm.classList.contains('hidden')) updateConfirm();
+    }
+  }
+},1000);
+
+function openConfirm(){
+  const task=S.levelTasks[S.currentTaskLevel];
+  document.getElementById('conf-task').textContent=task?task.task:'';
+  updateConfirm();
+  openM('m-confirm');
+}
+function updateConfirm(){
+  if(!S.confirmDeadline) return;
+  const rem=Math.max(0,S.confirmDeadline-Date.now());
+  const el=document.getElementById('conf-timer');
+  el.textContent=hms(rem);
+  el.className=rem<30*60*1000?'conf-timer red':'conf-timer';
+}
+
+// ===== MODAL HELPERS =====
+function openM(id){document.getElementById(id).classList.remove('hidden');}
+function closeM(id){document.getElementById(id).classList.add('hidden');}
+
+// ===== EDIT MODAL =====
+let editCtx=null;
+function openEdit(type,idx){
+  editCtx={type,idx};
+  const isNew=idx===-1;
+  const item=isNew?{name:'',xp:''}:(type==='preset'?presets[idx]:dailies[idx]);
+  document.getElementById('edit-title').textContent=isNew?'Новая '+(type==='preset'?'задача':'дейлик'):'Редактировать';
+  document.getElementById('edit-name').value=item.name;
+  document.getElementById('edit-xp').value=item.xp||'';
+  document.getElementById('edit-del').style.display=isNew?'none':'';
+  openM('m-edit');
+  setTimeout(()=>document.getElementById('edit-name').focus(),100);
+}
+
+// ===== EVENTS =====
+document.getElementById('lvl-banner').addEventListener('click',()=>{
+  if(S.levelUpStatus==='available') openLU();
+  else if(S.levelUpStatus==='confirm_window') openConfirm();
+});
+
+document.getElementById('bn-cta').addEventListener('click',e=>{
+  e.stopPropagation();
+  if(S.levelUpStatus==='available') openLU();
+  else if(S.levelUpStatus==='confirm_window') openConfirm();
+});
+
+document.getElementById('conf-yes').addEventListener('click',()=>{closeM('m-confirm');doLevelUp();});
+document.getElementById('conf-no').addEventListener('click',()=>closeM('m-confirm'));
+document.getElementById('setup-skip').addEventListener('click',()=>{closeM('m-setup');if(setupCb){setupCb();setupCb=null;}});
+
+document.getElementById('edit-save').addEventListener('click',()=>{
+  const name=document.getElementById('edit-name').value.trim();
+  const xp=parseInt(document.getElementById('edit-xp').value)||0;
+  if(!name||xp<=0){showToast('Заполни поля');return;}
+  const{type,idx}=editCtx;
+  const list=type==='preset'?presets:dailies;
+  if(idx===-1) list.push({name,xp}); else list[idx]={name,xp};
+  if(type==='preset') savePre(); else saveDai();
+  closeM('m-edit'); renderStLists(); render(); showToast('Сохранено');
+});
+document.getElementById('edit-del').addEventListener('click',()=>{
+  const{type,idx}=editCtx;
+  if(idx===-1) return;
+  (type==='preset'?presets:dailies).splice(idx,1);
+  if(type==='preset') savePre(); else saveDai();
+  closeM('m-edit'); renderStLists(); render(); showToast('Удалено');
+});
+document.getElementById('edit-cancel').addEventListener('click',()=>closeM('m-edit'));
+
+document.getElementById('add-btn').addEventListener('click',()=>{
+  const name=document.getElementById('t-name').value.trim()||'Своя задача';
+  const xp=parseInt(document.getElementById('t-xp').value)||0;
+  if(xp<=0){showToast('Укажи XP');return;}
+  document.getElementById('t-name').value='';
+  document.getElementById('t-xp').value='';
+  addXP(name,xp);
+});
+
+document.getElementById('settings-btn').addEventListener('click',()=>{
+  renderStLists();
+  document.getElementById('st-goal').value=S.dailyGoal;
+  document.getElementById('view-settings').classList.remove('hidden');
+});
+document.getElementById('st-back').addEventListener('click',()=>{
+  document.getElementById('view-settings').classList.add('hidden');
+  render();
+});
+document.getElementById('st-goal-save').addEventListener('click',()=>{
+  const v=parseInt(document.getElementById('st-goal').value)||500;
+  if(v<1) return;
+  S.dailyGoal=v; save(); render(); showToast('Цель: '+v+' XP/день');
+});
+document.getElementById('add-daily-btn').addEventListener('click',()=>openEdit('daily',-1));
+document.getElementById('add-preset-btn').addEventListener('click',()=>openEdit('preset',-1));
+document.getElementById('reset-btn').addEventListener('click',()=>{
+  if(!confirm('Сбросить весь прогресс? Это нельзя отменить.')) return;
+  localStorage.removeItem('xpv4'); localStorage.removeItem('xp_dpv4');
+  S=defState(); dp={date:new Date().toDateString(),done:[],bonusGiven:false};
+  save(); saveDP();
+  document.getElementById('view-settings').classList.add('hidden');
+  render(); showToast('Сброшено');
+});
 
 // Notifications
-const notifBtn = document.getElementById('notif-btn');
-const banner = document.getElementById('notify-banner');
-
-function updateNotifUI() {
-  if (!('Notification' in window)) return;
-  notifBtn.classList.toggle('on', Notification.permission === 'granted');
-  if (Notification.permission === 'default') banner.classList.remove('hidden');
+const notifBtn=document.getElementById('notif-btn');
+const notifBanner=document.getElementById('notif-banner');
+function updateNotifUI(){
+  if(!('Notification' in window)) return;
+  const ok=Notification.permission==='granted';
+  notifBtn.classList.toggle('on',ok);
+  notifBanner.classList.toggle('hidden',Notification.permission!=='default');
 }
-
-async function requestNotif() {
-  if (!('Notification' in window)) { showToast('Не поддерживается'); return; }
-  const perm = await Notification.requestPermission();
-  if (perm === 'granted') { localStorage.setItem('notif_enabled', '1'); showToast('Уведомления включены'); banner.classList.add('hidden'); }
+async function reqNotif(){
+  if(!('Notification' in window)){showToast('Не поддерживается');return;}
+  const p=await Notification.requestPermission();
+  if(p==='granted') showToast('Уведомления включены');
   updateNotifUI();
 }
-
-notifBtn.addEventListener('click', requestNotif);
-document.getElementById('notify-allow-btn').addEventListener('click', requestNotif);
-
-function sendNotif(title, body) {
-  if (Notification.permission !== 'granted') return;
-  navigator.serviceWorker.ready.then(reg => {
-    reg.showNotification(title, { body, icon: 'icon-192.png', badge: 'icon-192.png' });
-  });
+notifBtn.addEventListener('click',reqNotif);
+document.getElementById('notif-allow').addEventListener('click',reqNotif);
+function sendNotif(title,body){
+  if(Notification.permission!=='granted') return;
+  navigator.serviceWorker.ready.then(r=>r.showNotification(title,{body,icon:'icon-192.png',badge:'icon-192.png'})).catch(()=>{});
 }
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
-  navigator.serviceWorker.addEventListener('message', e => {
-    if (e.data && e.data.type === 'NOTIFY') {
-      resetDayIfNeeded();
-      const xpInLevel = state.totalXP % XP_PER_LEVEL;
-      const left = XP_PER_LEVEL - xpInLevel;
-      const level = Math.floor(state.totalXP / XP_PER_LEVEL) + 1;
-      const hour = new Date().getHours();
-      const doneDailies = dailyProgress.done.length;
-      if (hour < 12) sendNotif('Доброе утро!', 'Выполни дейлики и заработай XP. Уровень ' + level);
-      else sendNotif('Вечерний отчёт', 'Дейлики: ' + doneDailies + '/' + dailies.length + ' · До уровня ' + (level+1) + ' осталось ' + left + ' XP');
+// SW
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+  navigator.serviceWorker.addEventListener('message',e=>{
+    if(e.data&&e.data.type==='NOTIFY'){
+      dayReset();
+      const hour=new Date().getHours();
+      if(hour<12) sendNotif('Доброе утро, ур.'+S.level+'!','Дневная цель: '+S.dailyGoal+' XP · Банк: '+S.bankXP+' XP');
+      else sendNotif('Вечерний отчёт','Сегодня: '+S.todayXP+'/'+S.dailyGoal+' XP · Уровень '+S.level);
     }
   });
 }
 
-if ('Notification' in window) setTimeout(updateNotifUI, 800);
-render();
+// Toast
+let toastT;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// First run
+function initSetup(){
+  if(!S.levelTasks[S.level+1]&&!localStorage.getItem('init_setup')){
+    localStorage.setItem('init_setup','1');
+    setTimeout(()=>openSetup(null),1500);
+  }
+}
+
+// INIT
+dayReset(); render();
+if('Notification' in window) setTimeout(updateNotifUI,500);
+initSetup();
+if(S.levelUpStatus==='confirm_window') setTimeout(()=>{if(Date.now()<S.confirmDeadline) openConfirm();},1000);
+if(S.levelUpStatus==='available') setTimeout(()=>openLU(),800);
 </script>
 </body>
 </html>
