@@ -13,32 +13,34 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
   <style>
     :root{--bg:#0f0f0f;--sur:#1a1a1a;--s2:#242424;--bdr:#2e2e2e;--txt:#f0ede6;--mut:#6b6b6b;--acc:#c8f04a;--adim:rgba(200,240,74,.10);--blue:#4a9eff;--bdim:rgba(74,158,255,.12);--red:#ff5555;--rdim:rgba(255,85,85,.08);}
+    body.cls-warrior{--acc:#ff7043;--adim:rgba(255,112,67,.10);}
+    body.cls-mage{--acc:#a78bfa;--adim:rgba(167,139,250,.10);}
+    body.cls-healer{--acc:#34d399;--adim:rgba(52,211,153,.10);}
+    body.cls-assassin{--acc:#fb7185;--adim:rgba(251,113,133,.10);}
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-    html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Syne',sans-serif;}
+    html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Syne',sans-serif;transition:background .3s;}
     .hidden{display:none!important;}
     #view-main{max-width:480px;margin:0 auto;padding:0 0 6rem;}
 
-    /* HEADER */
     .hdr{padding:2.5rem 1.5rem 1rem;}
     .hdr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
-    .lvl-pill{background:var(--acc);color:#0f0f0f;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:5px 12px;border-radius:99px;letter-spacing:.04em;}
+    .lvl-pill{position:relative;overflow:hidden;background:var(--acc);color:#0f0f0f;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:5px 12px;border-radius:99px;letter-spacing:.04em;transition:background .3s;}
     .hdr-acts{display:flex;gap:8px;}
     .icon-btn{background:var(--sur);border:1px solid var(--bdr);color:var(--mut);font-size:15px;width:36px;height:36px;border-radius:99px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
     .icon-btn:active{opacity:.6;}
     .icon-btn.on{border-color:var(--acc);color:var(--acc);}
+    .cls-badge{font-family:'Space Mono',monospace;font-size:10px;color:var(--acc);padding:3px 8px;border:1px solid var(--acc);border-radius:99px;opacity:.7;}
     .xp-num{font-size:72px;font-weight:800;line-height:1;letter-spacing:-.03em;}
-    .xp-num span{color:var(--acc);font-size:40px;vertical-align:middle;margin-left:4px;}
+    .xp-num span{color:var(--acc);font-size:40px;vertical-align:middle;margin-left:4px;transition:color .3s;}
     .xp-cap{font-family:'Space Mono',monospace;font-size:11px;color:var(--mut);margin-top:8px;}
 
-    /* BAR */
     .bar-sec{padding:1.25rem 1.5rem 0;}
     .bar-bg{position:relative;height:14px;background:var(--s2);border-radius:99px;overflow:hidden;}
-    .bar-fill{position:absolute;left:0;top:0;height:100%;background:var(--acc);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+    .bar-fill{position:absolute;left:0;top:0;height:100%;background:var(--acc);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1),background .3s;}
     .bar-over{position:absolute;left:0;top:0;height:100%;background:var(--blue);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1);opacity:.85;}
     .bar-meta{display:flex;justify-content:space-between;margin-top:7px;font-family:'Space Mono',monospace;font-size:10px;color:var(--mut);}
     .bar-bank{color:var(--blue);}
 
-    /* BANNER */
     .banner{margin:1rem 1.5rem 0;background:var(--sur);border:1px solid var(--bdr);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;}
     .banner.ok{border-color:rgba(200,240,74,.35);background:var(--adim);}
     .banner.warn{border-color:rgba(255,85,85,.35);background:var(--rdim);}
@@ -48,54 +50,50 @@
     .bn-task{font-size:13px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
     .bn-time{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--acc);line-height:1;}
     .bn-time.red{color:var(--red);}
-    .bn-cta{background:var(--acc);color:#0f0f0f;border:none;border-radius:8px;padding:8px 12px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+    .bn-cta{background:var(--acc);color:#0f0f0f;border:none;border-radius:8px;padding:8px 12px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .3s;}
     .bn-cta.red{background:var(--red);color:#fff;}
     .bn-close{background:none;border:none;color:var(--mut);font-size:18px;cursor:pointer;padding:0 2px;flex-shrink:0;line-height:1;}
 
-    /* NOTIFY */
     .notif-banner{margin:1rem 1.5rem 0;background:var(--adim);border:1px solid rgba(200,240,74,.2);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;}
-    .notif-txt{flex:1;font-size:13px;color:var(--txt);line-height:1.4;}
-    .notif-btn{background:var(--acc);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;padding:7px 14px;border:none;border-radius:99px;cursor:pointer;white-space:nowrap;}
+    .notif-txt{flex:1;font-size:13px;color:var(--txt);}
+    .notif-btn{background:var(--acc);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;padding:7px 14px;border:none;border-radius:99px;cursor:pointer;white-space:nowrap;transition:background .3s;}
     .notif-x{background:none;border:none;color:var(--mut);font-size:18px;cursor:pointer;flex-shrink:0;}
 
-    /* DIV & LABELS */
     .div{height:1px;background:var(--bdr);margin:1.75rem 1.5rem;}
     .sec-hd{display:flex;justify-content:space-between;align-items:center;padding:0 1.5rem;margin-bottom:.75rem;}
     .sec-lbl{font-family:'Space Mono',monospace;font-size:10px;color:var(--mut);letter-spacing:.12em;text-transform:uppercase;}
     .sec-act{font-family:'Space Mono',monospace;font-size:10px;color:var(--acc);cursor:pointer;background:none;border:none;padding:0;}
 
-    /* DAILIES */
     .dailies{padding:0 1.5rem;display:flex;flex-direction:column;gap:2px;}
     .daily{display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--sur);border:1px solid transparent;border-radius:10px;cursor:pointer;user-select:none;transition:all .12s;}
     .daily.done{background:var(--adim);border-color:rgba(200,240,74,.2);opacity:.6;}
     .daily:active{transform:scale(.99);}
     .d-chk{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;}
-    .daily.done .d-chk{background:var(--acc);border-color:var(--acc);color:#0f0f0f;}
+    .daily.done .d-chk{background:var(--acc);border-color:var(--acc);color:#0f0f0f;transition:background .3s,border-color .3s;}
     .d-nm{flex:1;font-size:14px;color:var(--txt);}
     .daily.done .d-nm{text-decoration:line-through;color:var(--mut);}
     .d-xp{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--acc);}
+    .d-tag{font-size:10px;opacity:.5;margin-left:2px;}
     .d-bonus{margin:8px 1.5rem 0;background:var(--adim);border:1px solid rgba(200,240,74,.15);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;}
     .db-t{font-size:12px;color:var(--mut);}
     .db-x{font-family:'Space Mono',monospace;font-size:12px;color:var(--acc);font-weight:700;}
 
-    /* PRESETS */
     .presets{padding:0 1.5rem;display:flex;flex-direction:column;gap:2px;}
     .preset{display:flex;align-items:center;gap:8px;padding:13px 14px;background:var(--sur);border:1px solid transparent;border-radius:10px;cursor:pointer;user-select:none;transition:all .12s;}
     .preset:active{background:var(--adim);border-color:var(--acc);transform:scale(.99);}
     .p-nm{flex:1;font-size:14px;color:var(--txt);}
     .p-xp{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--acc);}
+    .p-tag{font-size:12px;opacity:.4;}
 
-    /* CUSTOM */
     .cust{padding:0 1.5rem;}
     .cust-row{display:flex;gap:8px;}
     .cust-row input{flex:1;background:var(--sur);border:1px solid var(--bdr);color:var(--txt);font-family:'Syne',sans-serif;font-size:14px;padding:12px 14px;border-radius:10px;outline:none;min-width:0;transition:border-color .12s;}
     .cust-row input:focus{border-color:var(--acc);}
     .cust-row input::placeholder{color:var(--mut);}
     .xp-inp{max-width:80px!important;}
-    .add-btn{background:var(--acc);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:20px;padding:0 18px;border:none;border-radius:10px;cursor:pointer;flex-shrink:0;height:46px;}
+    .add-btn{background:var(--acc);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:20px;padding:0 18px;border:none;border-radius:10px;cursor:pointer;flex-shrink:0;height:46px;transition:background .3s;}
     .add-btn:active{opacity:.7;}
 
-    /* HISTORY */
     .hist{padding:0 1.5rem;display:flex;flex-direction:column;gap:2px;}
     .h-it{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--sur);border-radius:8px;}
     .h-nm{font-size:13px;color:var(--mut);}
@@ -111,7 +109,7 @@
     .st-row{display:flex;gap:8px;margin-top:10px;}
     .st-row input{flex:1;background:var(--sur);border:1px solid var(--bdr);color:var(--txt);font-family:'Syne',sans-serif;font-size:14px;padding:12px 14px;border-radius:10px;outline:none;min-width:0;}
     .st-row input:focus{border-color:var(--acc);}
-    .st-sv{background:var(--acc);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;padding:12px 18px;border:none;border-radius:10px;cursor:pointer;white-space:nowrap;}
+    .st-sv{background:var(--acc);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;padding:12px 18px;border:none;border-radius:10px;cursor:pointer;white-space:nowrap;transition:background .3s;}
     .st-info{font-family:'Space Mono',monospace;font-size:11px;color:var(--blue);margin-top:8px;}
     .st-it{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--sur);border-radius:8px;margin-bottom:2px;}
     .si-nm{flex:1;font-size:13px;color:var(--txt);}
@@ -121,7 +119,7 @@
 
     /* MODALS */
     .ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:30;display:flex;align-items:flex-end;justify-content:center;}
-    .modal{background:var(--sur);border-radius:20px 20px 0 0;padding:1.5rem 1.5rem 2.5rem;width:100%;max-width:480px;display:flex;flex-direction:column;gap:12px;max-height:90vh;overflow-y:auto;}
+    .modal{background:var(--sur);border-radius:20px 20px 0 0;padding:1.5rem 1.5rem 2.5rem;width:100%;max-width:480px;display:flex;flex-direction:column;gap:12px;max-height:90vh;overflow-y:auto;position:relative;}
     .m-hnd{width:36px;height:4px;background:var(--bdr);border-radius:99px;margin:0 auto 4px;flex-shrink:0;}
     .m-ico{font-size:30px;text-align:center;}
     .m-ttl{font-size:18px;font-weight:700;color:var(--txt);text-align:center;}
@@ -130,18 +128,23 @@
     .modal input{background:var(--s2);border:1px solid var(--bdr);color:var(--txt);font-family:'Syne',sans-serif;font-size:14px;padding:12px 14px;border-radius:10px;outline:none;width:100%;}
     .modal input:focus{border-color:var(--acc);}
     .modal input::placeholder{color:var(--mut);}
-    .m-sv{flex:1;background:var(--acc);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;padding:13px;border:none;border-radius:10px;cursor:pointer;}
+    .m-sv{flex:1;background:var(--acc);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;padding:13px;border:none;border-radius:10px;cursor:pointer;transition:background .3s;}
     .m-del{background:var(--s2);border:1px solid rgba(255,85,85,.3);color:var(--red);font-family:'Syne',sans-serif;font-size:14px;padding:13px 16px;border-radius:10px;cursor:pointer;}
     .m-btns{display:flex;gap:8px;}
     .m-cancel{background:var(--s2);border:1px solid var(--bdr);color:var(--mut);font-family:'Syne',sans-serif;font-size:14px;padding:13px;border-radius:10px;cursor:pointer;text-align:center;width:100%;}
-    .m-close{position:absolute;top:1rem;right:1.25rem;background:none;border:none;color:var(--mut);font-size:22px;cursor:pointer;line-height:1;}
+    .m-close{position:absolute;top:1rem;right:1.25rem;background:none;border:none;color:var(--mut);font-size:22px;cursor:pointer;line-height:1;z-index:1;}
+
+    /* TAG SELECTOR */
+    .tag-row{display:flex;gap:6px;flex-wrap:wrap;}
+    .tag-btn{background:var(--s2);border:1px solid var(--bdr);color:var(--mut);font-size:12px;padding:6px 10px;border-radius:99px;cursor:pointer;transition:all .12s;white-space:nowrap;}
+    .tag-btn.active{border-color:var(--acc);color:var(--acc);background:var(--adim);}
 
     /* LEVEL UP */
     .lu-opt{background:var(--s2);border:1px solid var(--bdr);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;}
     .lu-lbl{font-family:'Space Mono',monospace;font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;}
     .lu-task{font-size:15px;color:var(--txt);font-weight:700;line-height:1.3;}
     .lu-meta{font-family:'Space Mono',monospace;font-size:11px;color:var(--mut);}
-    .lu-btn{background:var(--acc);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;padding:12px;border:none;border-radius:10px;cursor:pointer;text-align:center;}
+    .lu-btn{background:var(--acc);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;padding:12px;border:none;border-radius:10px;cursor:pointer;text-align:center;transition:background .3s;}
     .lu-btn.blue{background:var(--blue);color:#fff;}
     .lu-btn.dim{background:var(--sur);border:1px solid var(--bdr);color:var(--mut);cursor:pointer;}
     .lu-btn.locked{background:var(--sur);border:1px solid var(--bdr);color:var(--mut);cursor:not-allowed;opacity:.6;}
@@ -150,10 +153,10 @@
     .lu-sep-t{font-family:'Space Mono',monospace;font-size:10px;color:var(--mut);}
 
     /* CONFIRM */
-    .conf-timer{font-family:'Space Mono',monospace;font-size:44px;font-weight:700;color:var(--acc);text-align:center;line-height:1;}
+    .conf-timer{font-family:'Space Mono',monospace;font-size:44px;font-weight:700;color:var(--acc);text-align:center;line-height:1;transition:color .3s;}
     .conf-timer.red{color:var(--red);}
     .conf-box{background:var(--s2);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--txt);line-height:1.5;}
-    .conf-yes{background:var(--acc);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;padding:14px;border:none;border-radius:10px;cursor:pointer;width:100%;}
+    .conf-yes{background:var(--acc);color:#0f0f0f;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;padding:14px;border:none;border-radius:10px;cursor:pointer;width:100%;transition:background .3s;}
     .conf-no{background:none;border:1px solid var(--bdr);color:var(--mut);font-family:'Syne',sans-serif;font-size:13px;padding:12px;border-radius:10px;cursor:pointer;text-align:center;width:100%;}
 
     /* SETUP */
@@ -163,19 +166,34 @@
     .time-row input{flex:1;}
     .time-lbl{font-size:12px;color:var(--mut);white-space:nowrap;}
 
+    /* CLASS SELECT */
+    .cls-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .cls-card{background:var(--s2);border:1px solid var(--bdr);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:5px;}
+    .cls-card:active{transform:scale(.97);}
+    .cls-card.sel{border-color:var(--acc);}
+    .cls-emoji{font-size:22px;}
+    .cls-name{font-size:14px;font-weight:700;color:var(--txt);}
+    .cls-bonus{font-size:11px;color:var(--acc);font-family:'Space Mono',monospace;}
+    .cls-pass{font-size:10px;color:var(--mut);}
+    .cls-cur{font-family:'Space Mono',monospace;font-size:10px;color:var(--acc);text-align:center;padding:6px;background:var(--adim);border-radius:8px;}
+
+    /* REWARD */
+    .reward-box{background:var(--adim);border:1px solid var(--acc);border-radius:12px;padding:16px;font-size:16px;color:var(--txt);text-align:center;line-height:1.5;font-weight:700;}
+
     /* TOAST */
-    .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--acc);color:#0f0f0f;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;padding:10px 22px;border-radius:99px;white-space:nowrap;transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:99;pointer-events:none;}
+    .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--acc);color:#0f0f0f;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;padding:10px 22px;border-radius:99px;white-space:nowrap;transition:transform .3s cubic-bezier(.4,0,.2,1),background .3s;z-index:99;pointer-events:none;}
     .toast.show{transform:translateX(-50%) translateY(0);}
   </style>
 </head>
 <body>
 
-<!-- MAIN -->
+<!-- MAIN VIEW -->
 <div id="view-main">
   <div class="hdr">
     <div class="hdr-top">
       <div class="lvl-pill" id="lvl-pill">Уровень 1</div>
       <div class="hdr-acts">
+        <div class="cls-badge hidden" id="cls-badge"></div>
         <button class="icon-btn" id="notif-btn">🔔</button>
         <button class="icon-btn" id="st-btn">⚙</button>
       </div>
@@ -195,7 +213,6 @@
     </div>
   </div>
 
-  <!-- BANNER: level up states -->
   <div id="banner" class="banner hidden">
     <div class="bn-inner">
       <div class="bn-lbl" id="bn-lbl"></div>
@@ -206,7 +223,6 @@
     <button class="bn-close" id="bn-close">×</button>
   </div>
 
-  <!-- BANNER: notifications -->
   <div id="notif-banner" class="notif-banner hidden">
     <div class="notif-txt">Включи уведомления — напомню про XP</div>
     <button class="notif-btn" id="notif-allow">Включить</button>
@@ -214,15 +230,9 @@
   </div>
 
   <div class="div"></div>
-  <div class="sec-hd">
-    <span class="sec-lbl">дейлики</span>
-    <span class="sec-lbl" id="d-count" style="color:var(--mut)">0/0</span>
-  </div>
+  <div class="sec-hd"><span class="sec-lbl">дейлики</span><span class="sec-lbl" id="d-count" style="color:var(--mut)">0/0</span></div>
   <div class="dailies" id="dailies"></div>
-  <div class="d-bonus" id="d-bonus" style="opacity:.4">
-    <span class="db-t">Бонус за все дейлики</span>
-    <span class="db-x">+100 XP</span>
-  </div>
+  <div class="d-bonus" id="d-bonus" style="opacity:.4"><span class="db-t">Бонус за все дейлики</span><span class="db-x">+100 XP</span></div>
 
   <div class="div"></div>
   <div class="sec-hd"><span class="sec-lbl">задачи</span></div>
@@ -243,43 +253,29 @@
   <div class="hist" id="hist"></div>
 </div>
 
-<!-- SETTINGS -->
+<!-- SETTINGS VIEW -->
 <div id="view-st" class="hidden">
-  <div class="st-hdr">
-    <button class="back-btn" id="st-back">←</button>
-    <span class="st-ttl">Настройки</span>
-  </div>
+  <div class="st-hdr"><button class="back-btn" id="st-back">←</button><span class="st-ttl">Настройки</span></div>
   <div class="st-body">
     <div class="st-sec">
       <div class="sec-lbl" style="padding:0">Дневная цель (XP)</div>
-      <div class="st-row">
-        <input type="number" id="st-goal" min="1" placeholder="500"/>
-        <button class="st-sv" id="st-goal-sv">Сохранить</button>
-      </div>
+      <div class="st-row"><input type="number" id="st-goal" min="1" placeholder="500"/><button class="st-sv" id="st-goal-sv">Сохранить</button></div>
       <div class="st-info" id="st-reset-info"></div>
     </div>
     <div class="div"></div>
-    <div class="sec-hd">
-      <span class="sec-lbl">дейлики</span>
-      <button class="sec-act" id="add-daily-btn">+ добавить</button>
-    </div>
+    <div class="sec-hd"><span class="sec-lbl">дейлики</span><button class="sec-act" id="add-daily-btn">+ добавить</button></div>
     <div style="padding:0 1.5rem" id="st-dailies"></div>
     <div class="div"></div>
-    <div class="sec-hd">
-      <span class="sec-lbl">задачи</span>
-      <button class="sec-act" id="add-preset-btn">+ добавить</button>
-    </div>
+    <div class="sec-hd"><span class="sec-lbl">задачи</span><button class="sec-act" id="add-preset-btn">+ добавить</button></div>
     <div style="padding:0 1.5rem" id="st-presets"></div>
     <div class="div"></div>
-    <div class="st-sec">
-      <button class="danger-btn" id="reset-btn">Сбросить весь прогресс</button>
-    </div>
+    <div class="st-sec"><button class="danger-btn" id="reset-btn">Сбросить весь прогресс</button></div>
   </div>
 </div>
 
 <!-- MODAL: LEVEL UP -->
 <div id="m-lu" class="ov hidden">
-  <div class="modal" style="position:relative">
+  <div class="modal">
     <div class="m-hnd"></div>
     <button class="m-close" id="lu-close">×</button>
     <div class="m-ico">🏆</div>
@@ -293,22 +289,22 @@
     </div>
     <div class="lu-sep"><div class="lu-sep-l"></div><span class="lu-sep-t">или</span><div class="lu-sep-l"></div></div>
     <div class="lu-opt">
-      <div class="lu-lbl">Пропустить задание за XP из банка</div>
-      <div class="lu-meta" id="lu-bank-meta">В банке: 0 XP · нужно 500</div>
+      <div class="lu-lbl">Пропустить за XP из банка</div>
+      <div class="lu-meta" id="lu-bank-meta"></div>
       <div id="lu-skip-btn"></div>
     </div>
     <button class="m-cancel" id="lu-later">Позже</button>
   </div>
 </div>
 
-<!-- MODAL: TIMER ACTIVE (task started, bar not full) -->
+<!-- MODAL: TASK DONE BAR PENDING -->
 <div id="m-wait-bar" class="ov hidden">
-  <div class="modal" style="position:relative">
+  <div class="modal">
     <div class="m-hnd"></div>
     <button class="m-close" id="wbar-close">×</button>
     <div class="m-ico">⏳</div>
     <div class="m-ttl">Задание выполнено!</div>
-    <div class="m-sub">Теперь заполни дневной бар чтобы повыситься</div>
+    <div class="m-sub">Заполни дневной бар чтобы повыситься</div>
     <div class="conf-box" id="wbar-task"></div>
     <button class="conf-yes" id="wbar-ok">Понял, иду зарабатывать XP!</button>
   </div>
@@ -316,7 +312,7 @@
 
 <!-- MODAL: CONFIRM -->
 <div id="m-conf" class="ov hidden">
-  <div class="modal" style="position:relative">
+  <div class="modal">
     <div class="m-hnd"></div>
     <button class="m-close" id="conf-close">×</button>
     <div class="m-ico">⏰</div>
@@ -330,26 +326,58 @@
 
 <!-- MODAL: SETUP TASKS -->
 <div id="m-setup" class="ov hidden">
-  <div class="modal" style="position:relative">
+  <div class="modal">
     <div class="m-hnd"></div>
     <button class="m-close" id="setup-close">×</button>
     <div class="m-ttl">Задай цели для уровней</div>
-    <div class="m-sub">Что нужно сделать чтобы повысить уровень?</div>
+    <div class="m-sub">Что нужно сделать и какая награда?</div>
     <div id="setup-fields" style="display:flex;flex-direction:column;gap:12px;"></div>
     <button class="m-sv" id="setup-save">Сохранить</button>
     <button class="m-cancel" id="setup-skip">Позже</button>
   </div>
 </div>
 
-<!-- MODAL: EDIT -->
+<!-- MODAL: CLASS SELECT -->
+<div id="m-class" class="ov hidden">
+  <div class="modal">
+    <div class="m-hnd"></div>
+    <div class="m-ico" id="cls-ico">⚔️🧙❤️🗡️</div>
+    <div class="m-ttl" id="cls-ttl">Выбери класс</div>
+    <div class="m-sub" id="cls-sub">Уровень 5 — выбери свой путь</div>
+    <div class="cls-cur hidden" id="cls-cur"></div>
+    <div class="cls-grid" id="cls-grid"></div>
+    <button class="m-cancel" id="cls-cancel">Позже</button>
+  </div>
+</div>
+
+<!-- MODAL: REWARD -->
+<div id="m-reward" class="ov hidden">
+  <div class="modal">
+    <div class="m-hnd"></div>
+    <div class="m-ico">🎁</div>
+    <div class="m-ttl">Награда разблокирована!</div>
+    <div class="m-sub" id="reward-lvl">Уровень 2</div>
+    <div class="reward-box" id="reward-txt"></div>
+    <button class="conf-yes" id="reward-ok">Получено! →</button>
+  </div>
+</div>
+
+<!-- MODAL: EDIT ITEM -->
 <div id="m-edit" class="ov hidden">
-  <div class="modal" style="position:relative">
+  <div class="modal">
     <div class="m-hnd"></div>
     <button class="m-close" id="edit-close">×</button>
     <div class="m-ttl" id="edit-ttl">Редактировать</div>
     <input type="text" id="edit-nm" placeholder="Название"/>
     <input type="number" id="edit-xp" placeholder="XP" min="1" max="500"/>
-    <div class="m-lbl" style="font-size:10px;color:var(--mut)">Максимум 500 XP</div>
+    <div class="m-lbl">Тег (для бонуса класса)</div>
+    <div class="tag-row" id="edit-tags">
+      <button class="tag-btn" data-tag="">Без тега</button>
+      <button class="tag-btn" data-tag="physical">💪 Физическое</button>
+      <button class="tag-btn" data-tag="mental">📚 Умственное</button>
+      <button class="tag-btn" data-tag="health">❤️ Здоровье</button>
+      <button class="tag-btn" data-tag="hard">🗡️ Сложное</button>
+    </div>
     <div class="m-btns">
       <button class="m-sv" id="edit-sv">Сохранить</button>
       <button class="m-del" id="edit-del">Удалить</button>
@@ -361,43 +389,54 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ===== CONSTANTS =====
+// ===== CLASS DATA =====
+const CLASS_DATA = {
+  warrior: {name:'Воин',emoji:'⚔️',tag:'physical',tagLabel:'💪 физ. ×1.2',passive:'SKIP_COST: 300 XP',acc:'#ff7043'},
+  mage:    {name:'Маг', emoji:'🧙',tag:'mental',  tagLabel:'📚 умств. ×1.2',passive:'Банк сверхнормы ×1.5',acc:'#a78bfa'},
+  healer:  {name:'Хилер',emoji:'❤️',tag:'health', tagLabel:'❤️ здоровье ×1.2',passive:'Дейлики ×1.2',acc:'#34d399'},
+  assassin:{name:'Ассасин',emoji:'🗡️',tag:'hard',tagLabel:'🗡️ сложн. ×1.2',passive:'Окно подтв. 4 часа',acc:'#fb7185'},
+};
+const TAG_EMOJI = {physical:'💪',mental:'📚',health:'❤️',hard:'🗡️'};
 const DAILY_BONUS = 100;
-const SKIP_COST = 500;
-const CONFIRM_MS = 2 * 60 * 60 * 1000;
 const XP_MAX = 500;
 
-const DEF_PRE = [
-  {name:"Постирал вещи",xp:25},{name:"Приготовил еду",xp:25},
-  {name:"Зарядка / разминка",xp:50},{name:"Уборка",xp:75},
-  {name:"Учёба / работа 1ч",xp:100},{name:"Важная задача",xp:125},{name:"Сложное дело",xp:150}
-];
-const DEF_DAI = [
-  {name:"Выпил воду утром",xp:10},{name:"Зарядка",xp:25},
-  {name:"Прочитал что-то полезное",xp:20},{name:"Лёг спать вовремя",xp:15}
-];
-
-// ===== LEVEL UP STATUS =====
-// none | available | timer_running | confirm_window | task_done_bar_pending | failed
-// available = bar full, task not started yet → show LU popup
-// timer_running = task timer going
-// confirm_window = 2h to confirm
-// task_done_bar_pending = task confirmed but bar not yet full
-// failed = window expired
-
+// ===== STATE =====
 function defS(){
   return{totalXP:0,todayXP:0,bankXP:0,lastDate:'',history:[],
     level:1,dailyGoal:500,dailyFilled:false,
-    luStatus:'none', timerEnd:null, confirmDeadline:null,
-    taskLevel:null, levelTasks:{}};
+    luStatus:'none',timerEnd:null,confirmDeadline:null,taskLevel:null,levelTasks:{},
+    class:null,classLevel:0};
 }
 
-let S = JSON.parse(localStorage.getItem('xpv4')||'null') || defS();
-let PRE = JSON.parse(localStorage.getItem('xp_pre')||'null') || [...DEF_PRE];
-let DAI = JSON.parse(localStorage.getItem('xp_dai')||'null') || [...DEF_DAI];
-let DP = loadDP();
+function migrateState(){
+  const old=JSON.parse(localStorage.getItem('xpv4')||'null');
+  if(old&&!localStorage.getItem('xpv5')){
+    const s=defS();
+    Object.assign(s,{totalXP:old.totalXP||0,todayXP:old.todayXP||0,bankXP:old.bankXP||0,
+      lastDate:old.lastDate||'',history:old.history||[],level:old.level||1,
+      dailyGoal:old.dailyGoal||500,dailyFilled:old.dailyFilled||false,
+      luStatus:old.luStatus||'none',timerEnd:old.timerEnd||null,
+      confirmDeadline:old.confirmDeadline||null,taskLevel:old.taskLevel||null,
+      levelTasks:old.levelTasks||{}});
+    localStorage.setItem('xpv5',JSON.stringify(s));
+  }
+}
+migrateState();
 
-function save(){localStorage.setItem('xpv4',JSON.stringify(S));}
+let S=JSON.parse(localStorage.getItem('xpv5')||'null')||defS();
+let PRE=JSON.parse(localStorage.getItem('xp_pre')||'null')||[
+  {name:"Постирал вещи",xp:25,tag:'physical'},{name:"Приготовил еду",xp:25,tag:'health'},
+  {name:"Зарядка / разминка",xp:50,tag:'physical'},{name:"Уборка",xp:75,tag:'physical'},
+  {name:"Учёба / работа 1ч",xp:100,tag:'mental'},{name:"Важная задача",xp:125,tag:'hard'},
+  {name:"Сложное дело",xp:150,tag:'hard'}
+];
+let DAI=JSON.parse(localStorage.getItem('xp_dai')||'null')||[
+  {name:"Выпил воду утром",xp:10,tag:'health'},{name:"Зарядка",xp:25,tag:'physical'},
+  {name:"Прочитал что-то полезное",xp:20,tag:'mental'},{name:"Лёг спать вовремя",xp:15,tag:'health'}
+];
+let DP=loadDP();
+
+function save(){localStorage.setItem('xpv5',JSON.stringify(S));}
 function savePre(){localStorage.setItem('xp_pre',JSON.stringify(PRE));}
 function saveDai(){localStorage.setItem('xp_dai',JSON.stringify(DAI));}
 function saveDP(){localStorage.setItem('xp_dpv4',JSON.stringify(DP));}
@@ -408,67 +447,76 @@ function loadDP(){
   return d;
 }
 
+// ===== HELPERS =====
+function pad(n){return String(n).padStart(2,'0');}
+function hms(ms){if(ms<=0)return'00:00:00';const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return pad(h)+':'+pad(m)+':'+pad(sec);}
+function fmtMin(m){if(m<60)return'~'+m+' мин';const h=Math.floor(m/60),r=m%60;return'~'+h+'ч'+(r?' '+r+'м':'');}
+function msToMidnight(){const now=new Date(),mid=new Date(now);mid.setHours(24,0,0,0);return mid-now;}
+function fmtMidnight(){const ms=msToMidnight();const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000);return pad(h)+':'+pad(m)+':'+pad(s);}
+function getAccColor(){return S.class?CLASS_DATA[S.class].acc:'#c8f04a';}
+function getSkipCost(){return S.class==='warrior'?300:500;}
+function getConfirmMs(){return S.class==='assassin'?4*3600000:2*3600000;}
+
+function xpMult(tag,isDaily){
+  if(!S.class) return 1;
+  const cd=CLASS_DATA[S.class];
+  let m=1;
+  if(tag&&cd.tag===tag) m=1.2;
+  if(isDaily&&S.class==='healer') m=Math.max(m,1.2);
+  return m;
+}
+
 // ===== DAY RESET =====
 function dayReset(){
   const t=new Date().toDateString();
   if(S.lastDate===t) return;
-  S.todayXP=0; S.dailyFilled=false; S.lastDate=t;
-  // failed resets each day
+  S.todayXP=0;S.dailyFilled=false;S.lastDate=t;
   if(S.luStatus==='failed') S.luStatus='none';
-  // task_done_bar_pending persists (task was already confirmed)
   DP={date:t,done:[],bonusGiven:false};
-  saveDP(); save();
+  saveDP();save();
 }
-
-// ===== MIDNIGHT TIMER =====
-function msToMidnight(){
-  const now=new Date(); const mid=new Date(now); mid.setHours(24,0,0,0);
-  return mid-now;
-}
-function fmtMidnight(){
-  const ms=msToMidnight();
-  const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000);
-  return pad(h)+':'+pad(m)+':'+pad(s);
-}
-function pad(n){return String(n).padStart(2,'0');}
 
 // ===== XP =====
-function addXP(name,xp,silent){
+function addXP(name,baseXP,tag,isDaily,silent){
   dayReset();
-  xp=Math.min(xp,XP_MAX);
+  const mult=xpMult(tag,isDaily);
+  const xp=Math.min(Math.round(baseXP*mult),XP_MAX);
   const prevToday=S.todayXP;
-  S.totalXP+=xp; S.todayXP+=xp;
-  // bank accumulates overflow over daily goal
+  S.totalXP+=xp;S.todayXP+=xp;
   const prevOver=Math.max(0,prevToday-S.dailyGoal);
   const newOver=Math.max(0,S.todayXP-S.dailyGoal);
-  S.bankXP+=newOver-prevOver;
-  S.history.push({name,xp});
+  const bankDelta=newOver-prevOver;
+  const bankMult=(S.class==='mage'&&bankDelta>0)?1.5:1;
+  S.bankXP+=Math.round(bankDelta*bankMult);
+  S.history.push({name,xp,mult:mult>1?mult:null});
   if(S.history.length>100) S.history=S.history.slice(-100);
 
-  // check if bar just filled
-  const justFilled=!S.dailyFilled && S.todayXP>=S.dailyGoal;
+  const justFilled=!S.dailyFilled&&S.todayXP>=S.dailyGoal;
   if(justFilled){
     S.dailyFilled=true;
-    // if task already confirmed, ready to level up
     if(S.luStatus==='task_done_bar_pending'){
-      S.luStatus='available';
-      save(); render();
-      if(!silent) showToast('🎯 Бар заполнен! Можно повышать уровень!');
-      setTimeout(()=>openLU(),700);
-      return;
+      S.luStatus='available';save();render();
+      if(!silent) showToast('🎯 Бар заполнен! Повышай уровень!');
+      setTimeout(()=>openLU(),700);return;
     }
-    // if no active task
     if(S.luStatus==='none'){
-      S.luStatus='available';
-      save(); render();
+      S.luStatus='available';save();render();
       if(!silent) showToast('🎯 Дневная цель! Повышай уровень!');
-      setTimeout(()=>openLU(),700);
-      return;
+      setTimeout(()=>openLU(),700);return;
     }
   }
   save();
-  if(!silent) showToast('+'+xp+' XP');
+  if(!silent) showToast('+'+xp+(mult>1?' (×'+mult.toFixed(1)+')':'')+'XP');
   render();
+}
+
+// ===== APPLY CLASS =====
+function applyClass(cls){
+  S.class=cls;S.classLevel=S.level;save();
+  document.body.className=cls?'cls-'+cls:'';
+  const badge=document.getElementById('cls-badge');
+  if(cls){badge.textContent=CLASS_DATA[cls].emoji+' '+CLASS_DATA[cls].name;badge.classList.remove('hidden');}
+  else badge.classList.add('hidden');
 }
 
 // ===== RENDER =====
@@ -485,52 +533,44 @@ function render(){
   document.getElementById('bar-over').style.width=overPct+'%';
   document.getElementById('bar-cur').textContent=Math.min(todayXP,dailyGoal)+' / '+dailyGoal+' XP';
   document.getElementById('bar-bank').textContent='банк: '+bankXP+' XP';
-  renderBanner();
-  renderDailies();
-  renderPresets();
-  renderHist();
+  renderBanner();renderDailies();renderPresets();renderHist();
 }
 
 function renderBanner(){
   const el=document.getElementById('banner');
   const cta=document.getElementById('bn-cta');
-  const timeEl=document.getElementById('bn-time');
+  const te=document.getElementById('bn-time');
   const{luStatus,timerEnd,confirmDeadline,taskLevel}=S;
   const task=S.levelTasks[taskLevel];
-
   if(luStatus==='available'){
     el.className='banner ok';
     document.getElementById('bn-lbl').textContent='дневная цель выполнена!';
     document.getElementById('bn-task').textContent='Нажми чтобы повысить уровень';
-    timeEl.textContent=''; cta.textContent='🏆'; cta.className='bn-cta'; cta.style.display='';
+    te.textContent='';cta.textContent='🏆';cta.className='bn-cta';cta.style.display='';
   } else if(luStatus==='timer_running'&&timerEnd){
     const rem=Math.max(0,timerEnd-Date.now());
     el.className='banner info';
     document.getElementById('bn-lbl').textContent='таймер · уровень '+(taskLevel||'');
     document.getElementById('bn-task').textContent=task?task.task:'';
-    timeEl.textContent=hms(rem); timeEl.className='bn-time';
-    cta.textContent='→'; cta.className='bn-cta'; cta.style.display='';
+    te.textContent=hms(rem);te.className='bn-time';cta.textContent='→';cta.className='bn-cta';cta.style.display='';
   } else if(luStatus==='confirm_window'&&confirmDeadline){
-    const rem=Math.max(0,confirmDeadline-Date.now());
-    const urgent=rem<30*60*1000;
+    const rem=Math.max(0,confirmDeadline-Date.now());const urgent=rem<30*60*1000;
     el.className='banner '+(urgent?'warn':'ok');
     document.getElementById('bn-lbl').textContent='подтверди выполнение!';
     document.getElementById('bn-task').textContent=task?task.task:'';
-    timeEl.textContent=hms(rem); timeEl.className=urgent?'bn-time red':'bn-time';
-    cta.textContent='Подтвердить'; cta.className='bn-cta'+(urgent?' red':''); cta.style.display='';
+    te.textContent=hms(rem);te.className=urgent?'bn-time red':'bn-time';
+    cta.textContent='Подтвердить';cta.className='bn-cta'+(urgent?' red':'');cta.style.display='';
   } else if(luStatus==='task_done_bar_pending'){
     el.className='banner info';
     document.getElementById('bn-lbl').textContent='задание выполнено ✓';
     document.getElementById('bn-task').textContent='Заполни дневной бар чтобы повыситься';
-    timeEl.textContent=''; cta.style.display='none';
+    te.textContent='';cta.style.display='none';
   } else if(luStatus==='failed'){
     el.className='banner warn';
     document.getElementById('bn-lbl').textContent='время подтверждения вышло';
     document.getElementById('bn-task').textContent='Заполни бар завтра для новой попытки';
-    timeEl.textContent=''; cta.style.display='none';
-  } else {
-    el.className='banner hidden'; return;
-  }
+    te.textContent='';cta.style.display='none';
+  } else{el.className='banner hidden';return;}
   el.classList.remove('hidden');
 }
 
@@ -540,25 +580,38 @@ function renderDailies(){
   document.getElementById('d-count').textContent=done+'/'+DAI.length;
   el.innerHTML=DAI.map((d,i)=>{
     const isDone=DP.done.includes(i);
+    const te=TAG_EMOJI[d.tag]||'';
+    const m=xpMult(d.tag,true);
+    const xpShow=m>1?Math.round(d.xp*m):d.xp;
     return`<div class="daily${isDone?' done':''}" data-i="${i}">
       <div class="d-chk">${isDone?'✓':''}</div>
-      <span class="d-nm">${d.name}</span><span class="d-xp">+${d.xp}</span></div>`;
+      <span class="d-nm">${d.name}</span>
+      ${te?`<span class="d-tag">${te}</span>`:''}
+      <span class="d-xp">+${xpShow}</span></div>`;
   }).join('');
   el.querySelectorAll('.daily').forEach(e=>e.addEventListener('click',()=>tapDaily(+e.dataset.i)));
   const allDone=DAI.length>0&&done===DAI.length;
   document.getElementById('d-bonus').style.opacity=allDone?'1':'.4';
-  if(allDone&&!DP.bonusGiven){DP.bonusGiven=true;saveDP();addXP('🎯 Все дейлики!',DAILY_BONUS,true);showToast('🎯 +'+DAILY_BONUS+' XP бонус!');}
+  if(allDone&&!DP.bonusGiven){DP.bonusGiven=true;saveDP();addXP('🎯 Все дейлики!',DAILY_BONUS,null,false,true);showToast('🎯 +'+DAILY_BONUS+' XP бонус!');}
 }
 
 function tapDaily(i){
   if(DP.done.includes(i)) return;
-  DP.done.push(i); saveDP(); addXP(DAI[i].name,DAI[i].xp);
+  DP.done.push(i);saveDP();addXP(DAI[i].name,DAI[i].xp,DAI[i].tag||null,true);
 }
 
 function renderPresets(){
   const el=document.getElementById('presets');
-  el.innerHTML=PRE.map((p,i)=>`<div class="preset" data-i="${i}"><span class="p-nm">${p.name}</span><span class="p-xp">+${p.xp}</span></div>`).join('');
-  el.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>addXP(PRE[+b.dataset.i].name,PRE[+b.dataset.i].xp)));
+  el.innerHTML=PRE.map((p,i)=>{
+    const te=TAG_EMOJI[p.tag]||'';
+    const m=xpMult(p.tag,false);
+    const xpShow=m>1?Math.round(p.xp*m):p.xp;
+    return`<div class="preset" data-i="${i}">
+      ${te?`<span class="p-tag">${te}</span>`:''}
+      <span class="p-nm">${p.name}</span>
+      <span class="p-xp">+${xpShow}</span></div>`;
+  }).join('');
+  el.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>addXP(PRE[+b.dataset.i].name,PRE[+b.dataset.i].xp,PRE[+b.dataset.i].tag||null,false)));
 }
 
 function renderHist(){
@@ -566,63 +619,82 @@ function renderHist(){
   if(S.history.length>0){
     document.getElementById('hdiv').classList.remove('hidden');
     document.getElementById('hlbl').classList.remove('hidden');
-    hl.innerHTML=S.history.slice().reverse().slice(0,10).map(h=>`<div class="h-it"><span class="h-nm">${h.name}</span><span class="h-xp">+${h.xp}</span></div>`).join('');
+    hl.innerHTML=S.history.slice().reverse().slice(0,10).map(h=>`<div class="h-it"><span class="h-nm">${h.name}${h.mult?` <span style="opacity:.5;font-size:11px">×${h.mult.toFixed(1)}</span>`:''}</span><span class="h-xp">+${h.xp}</span></div>`).join('');
   }
 }
 
 function renderStLists(){
-  document.getElementById('st-dailies').innerHTML=DAI.map((d,i)=>`<div class="st-it"><span class="si-nm">${d.name}</span><span class="si-xp">+${d.xp}</span><button class="si-ed" data-t="daily" data-i="${i}">✎</button></div>`).join('')||'<div style="padding:10px 0;font-size:13px;color:var(--mut)">Пусто</div>';
-  document.getElementById('st-presets').innerHTML=PRE.map((p,i)=>`<div class="st-it"><span class="si-nm">${p.name}</span><span class="si-xp">+${p.xp}</span><button class="si-ed" data-t="preset" data-i="${i}">✎</button></div>`).join('')||'<div style="padding:10px 0;font-size:13px;color:var(--mut)">Пусто</div>';
+  document.getElementById('st-dailies').innerHTML=DAI.map((d,i)=>`<div class="st-it"><span class="si-nm">${TAG_EMOJI[d.tag]||''} ${d.name}</span><span class="si-xp">+${d.xp}</span><button class="si-ed" data-t="daily" data-i="${i}">✎</button></div>`).join('')||'<div style="padding:10px 0;font-size:13px;color:var(--mut)">Пусто</div>';
+  document.getElementById('st-presets').innerHTML=PRE.map((p,i)=>`<div class="st-it"><span class="si-nm">${TAG_EMOJI[p.tag]||''} ${p.name}</span><span class="si-xp">+${p.xp}</span><button class="si-ed" data-t="preset" data-i="${i}">✎</button></div>`).join('')||'<div style="padding:10px 0;font-size:13px;color:var(--mut)">Пусто</div>';
   document.querySelectorAll('.si-ed').forEach(b=>b.addEventListener('click',()=>openEdit(b.dataset.t,+b.dataset.i)));
   document.getElementById('st-reset-info').textContent='Сброс бара через: '+fmtMidnight();
 }
 
-// ===== LEVEL UP =====
+// ===== LEVEL UP FLOW =====
 function openLU(){
-  const nxt=S.level+1;
-  const task=S.levelTasks[nxt];
+  const nxt=S.level+1;const task=S.levelTasks[nxt];
   document.getElementById('lu-sub').textContent='Уровень '+S.level+' → '+nxt;
-  // Task btn
+  const SKIP=getSkipCost();
   if(task){
     document.getElementById('lu-task').textContent=task.task;
     document.getElementById('lu-meta').textContent=fmtMin(task.minutes||60);
-    const alreadyRunning=S.luStatus==='timer_running'||S.luStatus==='confirm_window';
-    document.getElementById('lu-task-btn').innerHTML=alreadyRunning
+    const running=S.luStatus==='timer_running'||S.luStatus==='confirm_window';
+    document.getElementById('lu-task-btn').innerHTML=running
       ?'<button class="lu-btn dim">Таймер уже идёт</button>'
       :'<button class="lu-btn" id="lu-start">Начать таймер →</button>';
-    if(!alreadyRunning) document.getElementById('lu-start').onclick=()=>{closeM('m-lu');startTimer(nxt);};
+    if(!running) document.getElementById('lu-start').onclick=()=>{closeM('m-lu');startTimer(nxt);};
   } else {
     document.getElementById('lu-task').textContent='Задание не задано';
     document.getElementById('lu-meta').textContent='';
     document.getElementById('lu-task-btn').innerHTML='<button class="lu-btn dim" id="lu-set">Задать задание →</button>';
     document.getElementById('lu-set').onclick=()=>{closeM('m-lu');openSetup(()=>openLU());};
   }
-  // Skip btn
-  document.getElementById('lu-bank-meta').textContent='В банке: '+S.bankXP+' XP · нужно '+SKIP_COST;
-  const canSkip=S.bankXP>=SKIP_COST;
+  document.getElementById('lu-bank-meta').textContent='В банке: '+S.bankXP+' XP · нужно '+SKIP;
+  const canSkip=S.bankXP>=SKIP;
   document.getElementById('lu-skip-btn').innerHTML=canSkip
-    ?'<button class="lu-btn blue" id="lu-skip">Пропустить за '+SKIP_COST+' XP из банка</button>'
-    :'<button class="lu-btn locked">🔒 Ещё '+(SKIP_COST-S.bankXP)+' XP в банке</button>';
+    ?`<button class="lu-btn blue" id="lu-skip">Пропустить за ${SKIP} XP из банка</button>`
+    :`<button class="lu-btn locked">🔒 Ещё ${SKIP-S.bankXP} XP в банке</button>`;
   if(canSkip) document.getElementById('lu-skip').onclick=()=>{closeM('m-lu');skipLvl();};
   openM('m-lu');
 }
 
 function startTimer(lvl){
-  S.luStatus='timer_running'; S.taskLevel=lvl;
-  const t=S.levelTasks[lvl]; S.timerEnd=Date.now()+(t?t.minutes:60)*60*1000;
-  S.confirmDeadline=null; save(); render(); showToast('Таймер запущен!');
+  S.luStatus='timer_running';S.taskLevel=lvl;
+  const t=S.levelTasks[lvl];S.timerEnd=Date.now()+(t?t.minutes:60)*60*1000;
+  S.confirmDeadline=null;save();render();showToast('Таймер запущен!');
 }
 
-function skipLvl(){
-  if(S.bankXP<SKIP_COST) return;
-  S.bankXP-=SKIP_COST; doLevelUp();
-}
+function skipLvl(){const SKIP=getSkipCost();if(S.bankXP<SKIP)return;S.bankXP-=SKIP;doLevelUp();}
 
 function doLevelUp(){
-  S.level++; S.luStatus='none'; S.timerEnd=null; S.confirmDeadline=null; S.taskLevel=null;
-  S.dailyFilled=S.todayXP>=S.dailyGoal; save(); render();
+  const newLevel=S.level+1;
+  S.level=newLevel;S.luStatus='none';S.timerEnd=null;S.confirmDeadline=null;S.taskLevel=null;
+  S.dailyFilled=S.todayXP>=S.dailyGoal;save();render();
+  playLevelUpAnim();
   showToast('🎉 Уровень '+S.level+'!');
-  setTimeout(checkSetup,800);
+  afterLevelUp();
+}
+
+function afterLevelUp(){
+  const reward=S.levelTasks[S.level]&&S.levelTasks[S.level].reward;
+  const classAvail=S.level>=5&&(!S.class||S.level>=S.classLevel+25);
+  if(reward){
+    setTimeout(()=>showRewardModal(reward,()=>{
+      if(classAvail) setTimeout(()=>openClassSelect(()=>checkSetup()),300);
+      else checkSetup();
+    }),400);
+  } else if(classAvail){
+    setTimeout(()=>openClassSelect(()=>checkSetup()),600);
+  } else {
+    setTimeout(checkSetup,600);
+  }
+}
+
+function showRewardModal(reward,cb){
+  document.getElementById('reward-lvl').textContent='Уровень '+S.level;
+  document.getElementById('reward-txt').textContent=reward;
+  document.getElementById('reward-ok').onclick=()=>{closeM('m-reward');if(cb)cb();};
+  openM('m-reward');
 }
 
 function checkSetup(){
@@ -635,44 +707,73 @@ let setupCb=null;
 function openSetup(cb){
   setupCb=cb;
   const need=[];
-  const n1=S.level+1,n2=S.level+2;
-  if(!S.levelTasks[n1]) need.push(n1);
-  if(!S.levelTasks[n2]) need.push(n2);
-  if(!need.length){if(cb) cb(); return;}
+  if(!S.levelTasks[S.level+1]) need.push(S.level+1);
+  if(!S.levelTasks[S.level+2]) need.push(S.level+2);
+  if(!need.length){if(cb)cb();return;}
   document.getElementById('setup-fields').innerHTML=need.map(lvl=>`
     <div class="setup-grp">
       <div class="setup-glbl">Задание для уровня ${lvl}</div>
       <input type="text" id="sf-t-${lvl}" placeholder="Что нужно сделать?"/>
       <div class="time-row">
         <input type="number" id="sf-m-${lvl}" placeholder="60" min="1" max="720"/>
-        <span class="time-lbl">мин на выполнение</span>
+        <span class="time-lbl">мин</span>
       </div>
+      <input type="text" id="sf-r-${lvl}" placeholder="Награда за этот уровень (необязательно)"/>
     </div>`).join('');
   document.getElementById('setup-save').onclick=()=>{
     let ok=true;
     need.forEach(lvl=>{
       const t=(document.getElementById('sf-t-'+lvl).value||'').trim();
       const m=parseInt(document.getElementById('sf-m-'+lvl).value)||60;
+      const r=(document.getElementById('sf-r-'+lvl).value||'').trim();
       if(!t){ok=false;return;}
-      S.levelTasks[lvl]={task:t,minutes:m};
+      S.levelTasks[lvl]={task:t,minutes:m,reward:r||null};
     });
     if(!ok){showToast('Заполни задания');return;}
-    save(); closeM('m-setup'); if(setupCb){setupCb();setupCb=null;}
+    save();closeM('m-setup');if(setupCb){setupCb();setupCb=null;}
   };
   openM('m-setup');
+}
+
+// ===== CLASS SELECT =====
+let classCb=null;
+function openClassSelect(cb){
+  classCb=cb;
+  const isChange=!!S.class;
+  document.getElementById('cls-ttl').textContent=isChange?'Смена класса':'Выбери класс';
+  document.getElementById('cls-sub').textContent=isChange?'Уровень '+S.level+' — можно сменить путь':'Уровень 5 — выбери свой путь';
+  const curEl=document.getElementById('cls-cur');
+  if(isChange&&S.class){curEl.textContent='Текущий: '+CLASS_DATA[S.class].emoji+' '+CLASS_DATA[S.class].name;curEl.classList.remove('hidden');}
+  else curEl.classList.add('hidden');
+  const grid=document.getElementById('cls-grid');
+  grid.innerHTML=Object.entries(CLASS_DATA).map(([k,c])=>`
+    <div class="cls-card${S.class===k?' sel':''}" data-cls="${k}">
+      <span class="cls-emoji">${c.emoji}</span>
+      <span class="cls-name">${c.name}</span>
+      <span class="cls-bonus">${c.tagLabel}</span>
+      <span class="cls-pass">${c.passive}</span>
+    </div>`).join('');
+  grid.querySelectorAll('.cls-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      const cls=card.dataset.cls;
+      closeM('m-class');
+      playTriangleWipe(cls,()=>{applyClass(cls);render();if(classCb){classCb();classCb=null;}});
+    });
+  });
+  openM('m-class');
 }
 
 // ===== CONFIRM =====
 function openConf(){
   const task=S.levelTasks[S.taskLevel];
   document.getElementById('conf-task').textContent=task?task.task:'';
-  updateConf(); openM('m-conf');
+  updateConf();openM('m-conf');
 }
 function updateConf(){
   if(!S.confirmDeadline) return;
   const rem=Math.max(0,S.confirmDeadline-Date.now());
   const el=document.getElementById('conf-timer');
-  el.textContent=hms(rem); el.className=rem<30*60*1000?'conf-timer red':'conf-timer';
+  el.textContent=hms(rem);el.className=rem<30*60*1000?'conf-timer red':'conf-timer';
 }
 
 // ===== 1s INTERVAL =====
@@ -680,50 +781,103 @@ setInterval(()=>{
   const{luStatus,timerEnd,confirmDeadline}=S;
   if(!['timer_running','confirm_window'].includes(luStatus)) return;
   const now=Date.now();
-
   if(luStatus==='timer_running'){
-    renderBanner(); // update countdown every second
+    renderBanner();
     if(timerEnd&&now>=timerEnd){
-      S.luStatus='confirm_window';
-      S.confirmDeadline=timerEnd+CONFIRM_MS;
-      save(); renderBanner();
-      sendNotif('Время на задание вышло!','Подтверди выполнение. У тебя 2 часа.');
+      S.luStatus='confirm_window';S.confirmDeadline=timerEnd+getConfirmMs();save();renderBanner();
+      sendNotif('Время на задание вышло!','Подтверди выполнение. У тебя '+(S.class==='assassin'?4:2)+' часа.');
       openConf();
     }
-    return;
-  }
-
-  if(luStatus==='confirm_window'){
-    renderBanner(); updateConf();
+  } else if(luStatus==='confirm_window'){
+    renderBanner();updateConf();
     if(confirmDeadline&&now>=confirmDeadline){
-      S.luStatus='failed'; S.confirmDeadline=null; save();
-      renderBanner(); closeM('m-conf'); showToast('Время вышло. Жди следующего дня');
+      S.luStatus='failed';S.confirmDeadline=null;save();renderBanner();closeM('m-conf');showToast('Время вышло. Жди следующего дня');
     }
   }
 },1000);
+setInterval(()=>{const el=document.getElementById('st-reset-info');if(el&&!document.getElementById('view-st').classList.contains('hidden'))el.textContent='Сброс бара через: '+fmtMidnight();},1000);
 
-// also update settings reset countdown every second
-setInterval(()=>{
-  const el=document.getElementById('st-reset-info');
-  if(el&&!document.getElementById('view-st').classList.contains('hidden'))
-    el.textContent='Сброс бара через: '+fmtMidnight();
-},1000);
-
-// ===== UTILS =====
-function hms(ms){
-  if(ms<=0) return'00:00:00';
-  const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
-  return pad(h)+':'+pad(m)+':'+pad(sec);
+// ===== ANIMATIONS =====
+function playLevelUpAnim(){
+  // Glow
+  const acc=getAccColor();
+  const glow=document.createElement('div');
+  glow.style.cssText=`position:fixed;inset:0;z-index:50;pointer-events:none;background:radial-gradient(circle at 50% 15%,${acc}55 0%,transparent 65%);opacity:0;transition:opacity .35s;`;
+  document.body.appendChild(glow);
+  requestAnimationFrame(()=>{
+    glow.style.opacity='1';
+    setTimeout(()=>{glow.style.opacity='0';setTimeout(()=>glow.remove(),400);},700);
+  });
+  // Particles from level pill
+  const pill=document.getElementById('lvl-pill');
+  const rect=pill.getBoundingClientRect();
+  const cx=rect.left+rect.width/2;const cy=rect.top+rect.height/2;
+  for(let i=0;i<20;i++){
+    const angle=(i/20)*Math.PI*2;
+    const dist=35+Math.random()*55;
+    const dx=Math.cos(angle)*dist;const dy=Math.sin(angle)*dist;
+    const size=Math.round(3+Math.random()*4);
+    const p=document.createElement('div');
+    p.style.cssText=`position:fixed;z-index:51;pointer-events:none;width:${size}px;height:${size}px;border-radius:50%;background:${acc};left:${cx}px;top:${cy}px;transform:translate(-50%,-50%);transition:transform .65s ease-out,opacity .65s ease-out;`;
+    document.body.appendChild(p);
+    requestAnimationFrame(()=>{
+      p.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
+      p.style.opacity='0';
+    });
+    setTimeout(()=>p.remove(),750);
+  }
 }
-function fmtMin(m){if(m<60) return'~'+m+' мин';const h=Math.floor(m/60),r=m%60;return'~'+h+'ч'+(r?' '+r+'м':'');}
+
+function playTriangleWipe(cls,cb){
+  const canvas=document.createElement('canvas');
+  canvas.style.cssText='position:fixed;inset:0;z-index:100;pointer-events:all;';
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  document.body.appendChild(canvas);
+  const ctx=canvas.getContext('2d');
+  const color=CLASS_DATA[cls].acc;
+  const cols=7,rows=14;
+  const tw=canvas.width/cols,th=canvas.height/rows;
+  let frame=0;
+  const totalDelay=(rows-1)*4;
+  const fillDur=12;
+
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    let allFull=true;
+    for(let r=0;r<rows;r++){
+      const rowFromBottom=rows-1-r;
+      const delay=rowFromBottom*4;
+      const prog=Math.min(1,Math.max(0,(frame-delay)/fillDur));
+      if(prog<1) allFull=false;
+      if(prog<=0) continue;
+      ctx.fillStyle=color;ctx.globalAlpha=prog;
+      for(let c=0;c<cols;c++){
+        const x=c*tw,y=r*th;
+        ctx.beginPath();ctx.moveTo(x,y+th);ctx.lineTo(x+tw*prog,y+th);ctx.lineTo(x,y+th-th*prog);ctx.closePath();ctx.fill();
+        ctx.beginPath();ctx.moveTo(x+tw,y);ctx.lineTo(x+tw,y+th*prog);ctx.lineTo(x+tw-tw*prog,y);ctx.closePath();ctx.fill();
+      }
+    }
+    frame++;
+    if(!allFull){requestAnimationFrame(draw);}
+    else{
+      ctx.globalAlpha=1;ctx.fillStyle=color;ctx.fillRect(0,0,canvas.width,canvas.height);
+      if(cb) cb();
+      setTimeout(()=>{
+        canvas.style.transition='opacity .55s';canvas.style.opacity='0';
+        setTimeout(()=>canvas.remove(),600);
+      },150);
+    }
+  }
+  requestAnimationFrame(draw);
+}
 
 // ===== MODAL HELPERS =====
 function openM(id){document.getElementById(id).classList.remove('hidden');}
 function closeM(id){document.getElementById(id).classList.add('hidden');}
 
-// ===== BANNER EVENTS =====
+// ===== EVENTS =====
 document.getElementById('banner').addEventListener('click',e=>{
-  if(e.target.id==='bn-close'||e.target.id==='bn-cta') return;
+  if(['bn-close','bn-cta'].includes(e.target.id)) return;
   if(S.luStatus==='available') openLU();
   else if(S.luStatus==='confirm_window') openConf();
 });
@@ -731,120 +885,107 @@ document.getElementById('bn-cta').addEventListener('click',()=>{
   if(S.luStatus==='available') openLU();
   else if(S.luStatus==='confirm_window') openConf();
 });
-document.getElementById('bn-close').addEventListener('click',()=>{
-  document.getElementById('banner').classList.add('hidden');
-});
-
-// dismiss notif banner
+document.getElementById('bn-close').addEventListener('click',()=>document.getElementById('banner').classList.add('hidden'));
 document.getElementById('notif-x').addEventListener('click',()=>document.getElementById('notif-banner').classList.add('hidden'));
 
-// level up modal
 document.getElementById('lu-close').addEventListener('click',()=>closeM('m-lu'));
 document.getElementById('lu-later').addEventListener('click',()=>closeM('m-lu'));
 
-// confirm modal
 document.getElementById('conf-close').addEventListener('click',()=>closeM('m-conf'));
 document.getElementById('conf-yes').addEventListener('click',()=>{
   closeM('m-conf');
-  // task confirmed — check if bar full
-  if(S.dailyFilled){
-    doLevelUp();
-  } else {
-    S.luStatus='task_done_bar_pending'; S.confirmDeadline=null; save(); render();
-    openM('m-wait-bar');
+  if(S.dailyFilled){doLevelUp();}
+  else{
+    S.luStatus='task_done_bar_pending';S.confirmDeadline=null;save();render();
     document.getElementById('wbar-task').textContent=S.levelTasks[S.taskLevel]?S.levelTasks[S.taskLevel].task:'';
+    openM('m-wait-bar');
   }
 });
 document.getElementById('conf-no').addEventListener('click',()=>closeM('m-conf'));
-
-// wait bar modal
 document.getElementById('wbar-close').addEventListener('click',()=>closeM('m-wait-bar'));
 document.getElementById('wbar-ok').addEventListener('click',()=>closeM('m-wait-bar'));
+document.getElementById('setup-close').addEventListener('click',()=>{closeM('m-setup');setupCb=null;});
+document.getElementById('setup-skip').addEventListener('click',()=>{closeM('m-setup');setupCb=null;});
+document.getElementById('cls-cancel').addEventListener('click',()=>{closeM('m-class');classCb=null;});
 
-// setup modal
-document.getElementById('setup-close').addEventListener('click',()=>{closeM('m-setup');if(setupCb){setupCb=null;}});
-document.getElementById('setup-skip').addEventListener('click',()=>{closeM('m-setup');if(setupCb){setupCb=null;}});
-
-// add btn
 document.getElementById('add-btn').addEventListener('click',()=>{
   const name=document.getElementById('t-nm').value.trim()||'Своя задача';
   let xp=parseInt(document.getElementById('t-xp').value)||0;
   if(xp<=0){showToast('Укажи XP');return;}
-  if(xp>XP_MAX){xp=XP_MAX;showToast('Максимум '+XP_MAX+' XP');}
-  document.getElementById('t-nm').value=''; document.getElementById('t-xp').value='';
-  addXP(name,xp);
+  xp=Math.min(xp,XP_MAX);
+  document.getElementById('t-nm').value='';document.getElementById('t-xp').value='';
+  addXP(name,xp,null,false);
 });
 
-// settings
+// Settings
 document.getElementById('st-btn').addEventListener('click',()=>{
-  renderStLists();
-  document.getElementById('st-goal').value=S.dailyGoal;
+  renderStLists();document.getElementById('st-goal').value=S.dailyGoal;
   document.getElementById('view-st').classList.remove('hidden');
 });
-document.getElementById('st-back').addEventListener('click',()=>{
-  document.getElementById('view-st').classList.add('hidden'); render();
-});
+document.getElementById('st-back').addEventListener('click',()=>{document.getElementById('view-st').classList.add('hidden');render();});
 document.getElementById('st-goal-sv').addEventListener('click',()=>{
   const v=parseInt(document.getElementById('st-goal').value)||500;
-  if(v<1) return;
-  S.dailyGoal=v; save(); render(); showToast('Цель: '+v+' XP/день');
+  if(v<1) return;S.dailyGoal=v;save();render();showToast('Цель: '+v+' XP/день');
 });
 document.getElementById('add-daily-btn').addEventListener('click',()=>openEdit('daily',-1));
 document.getElementById('add-preset-btn').addEventListener('click',()=>openEdit('preset',-1));
 document.getElementById('reset-btn').addEventListener('click',()=>{
   if(!confirm('Сбросить весь прогресс?')) return;
-  localStorage.removeItem('xpv4'); localStorage.removeItem('xp_dpv4');
-  S=defS(); DP={date:new Date().toDateString(),done:[],bonusGiven:false};
-  save(); saveDP(); document.getElementById('view-st').classList.add('hidden'); render();
-  showToast('Сброшено');
+  localStorage.removeItem('xpv5');localStorage.removeItem('xp_dpv4');
+  S=defS();DP={date:new Date().toDateString(),done:[],bonusGiven:false};
+  save();saveDP();document.body.className='';
+  document.getElementById('cls-badge').classList.add('hidden');
+  document.getElementById('view-st').classList.add('hidden');render();showToast('Сброшено');
 });
 
-// ===== EDIT MODAL =====
-let editCtx=null;
+// Edit modal
+let editCtx=null,editTag='';
 function openEdit(type,idx){
   editCtx={type,idx};
   const isNew=idx===-1;
-  const item=isNew?{name:'',xp:''}:(type==='preset'?PRE[idx]:DAI[idx]);
+  const item=isNew?{name:'',xp:'',tag:''}:(type==='preset'?PRE[idx]:DAI[idx]);
   document.getElementById('edit-ttl').textContent=isNew?'Новая '+(type==='preset'?'задача':'дейлик'):'Редактировать';
   document.getElementById('edit-nm').value=item.name;
   document.getElementById('edit-xp').value=item.xp||'';
+  editTag=item.tag||'';
+  document.querySelectorAll('#edit-tags .tag-btn').forEach(b=>{b.classList.toggle('active',b.dataset.tag===editTag);});
   document.getElementById('edit-del').style.display=isNew?'none':'';
-  openM('m-edit');
-  setTimeout(()=>document.getElementById('edit-nm').focus(),100);
+  openM('m-edit');setTimeout(()=>document.getElementById('edit-nm').focus(),100);
 }
+document.querySelectorAll('#edit-tags .tag-btn').forEach(b=>b.addEventListener('click',()=>{
+  editTag=b.dataset.tag;
+  document.querySelectorAll('#edit-tags .tag-btn').forEach(x=>x.classList.toggle('active',x.dataset.tag===editTag));
+}));
 document.getElementById('edit-sv').addEventListener('click',()=>{
   const name=document.getElementById('edit-nm').value.trim();
   let xp=parseInt(document.getElementById('edit-xp').value)||0;
   if(!name||xp<=0){showToast('Заполни поля');return;}
   xp=Math.min(xp,XP_MAX);
-  const{type,idx}=editCtx;
-  const list=type==='preset'?PRE:DAI;
-  if(idx===-1) list.push({name,xp}); else list[idx]={name,xp};
-  if(type==='preset') savePre(); else saveDai();
-  closeM('m-edit'); renderStLists(); render(); showToast('Сохранено');
+  const{type,idx}=editCtx;const list=type==='preset'?PRE:DAI;
+  if(idx===-1) list.push({name,xp,tag:editTag||null});else list[idx]={name,xp,tag:editTag||null};
+  if(type==='preset') savePre();else saveDai();
+  closeM('m-edit');renderStLists();render();showToast('Сохранено');
 });
 document.getElementById('edit-del').addEventListener('click',()=>{
-  const{type,idx}=editCtx; if(idx===-1) return;
+  const{type,idx}=editCtx;if(idx===-1) return;
   (type==='preset'?PRE:DAI).splice(idx,1);
-  if(type==='preset') savePre(); else saveDai();
-  closeM('m-edit'); renderStLists(); render(); showToast('Удалено');
+  if(type==='preset') savePre();else saveDai();
+  closeM('m-edit');renderStLists();render();showToast('Удалено');
 });
 document.getElementById('edit-close').addEventListener('click',()=>closeM('m-edit'));
 document.getElementById('edit-cancel').addEventListener('click',()=>closeM('m-edit'));
 
-// ===== NOTIFICATIONS =====
+// Notifications
 const notifBtn=document.getElementById('notif-btn');
-const notifBanner=document.getElementById('notif-banner');
 function updateNotifUI(){
   if(!('Notification' in window)) return;
-  const ok=Notification.permission==='granted';
-  notifBtn.classList.toggle('on',ok);
-  if(Notification.permission==='default') notifBanner.classList.remove('hidden');
+  notifBtn.classList.toggle('on',Notification.permission==='granted');
+  if(Notification.permission==='default') document.getElementById('notif-banner').classList.remove('hidden');
 }
 async function reqNotif(){
   if(!('Notification' in window)){showToast('Не поддерживается');return;}
   const p=await Notification.requestPermission();
-  if(p==='granted'){showToast('Уведомления включены');notifBanner.classList.add('hidden');}
+  if(p==='granted'){showToast('Уведомления включены');document.getElementById('notif-banner').classList.add('hidden');}
   updateNotifUI();
 }
 notifBtn.addEventListener('click',reqNotif);
@@ -854,7 +995,6 @@ function sendNotif(title,body){
   navigator.serviceWorker.ready.then(r=>r.showNotification(title,{body,icon:'icon-192.png',badge:'icon-192.png'})).catch(()=>{});
 }
 
-// ===== SW =====
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js').catch(()=>{});
   navigator.serviceWorker.addEventListener('message',e=>{
@@ -862,40 +1002,30 @@ if('serviceWorker' in navigator){
     dayReset();
     const hour=new Date().getHours();
     const left=Math.max(0,S.dailyGoal-S.todayXP);
-    if(hour<12){
-      sendNotif('Доброе утро! Ур.'+S.level,'Цель сегодня: '+S.dailyGoal+' XP · банк: '+S.bankXP+' XP');
-    } else {
-      if(S.luStatus==='confirm_window'&&S.confirmDeadline){
-        const rem=Math.round(Math.max(0,S.confirmDeadline-Date.now())/60000);
-        sendNotif('Подтверди задание!','Осталось '+rem+' мин на подтверждение');
-      } else if(S.dailyFilled){
-        sendNotif('Дневная цель выполнена!','Повышай уровень '+S.level+' → '+(S.level+1));
-      } else {
-        sendNotif('Вечерний отчёт','Осталось '+left+' XP до цели · уровень '+S.level);
-      }
-    }
+    const cls=S.class?(' · '+CLASS_DATA[S.class].emoji+CLASS_DATA[S.class].name):'';
+    if(hour<12) sendNotif('Доброе утро! Ур.'+S.level+cls,'Цель: '+S.dailyGoal+' XP · Банк: '+S.bankXP+' XP');
+    else if(S.luStatus==='confirm_window'&&S.confirmDeadline) sendNotif('Подтверди задание!','Осталось '+Math.round(Math.max(0,S.confirmDeadline-Date.now())/60000)+' мин');
+    else if(S.dailyFilled) sendNotif('Дневная цель выполнена!','Повышай уровень '+S.level+' → '+(S.level+1));
+    else sendNotif('Вечерний отчёт','Осталось '+left+' XP до цели · уровень '+S.level+cls);
   });
 }
 
-// ===== TOAST =====
+// Toast
 let toastT;
 function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2200);
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);
 }
 
 // ===== INIT =====
-dayReset(); render();
+dayReset();
+if(S.class) document.body.className='cls-'+S.class;
+const badge=document.getElementById('cls-badge');
+if(S.class){badge.textContent=CLASS_DATA[S.class].emoji+' '+CLASS_DATA[S.class].name;badge.classList.remove('hidden');}
+render();
 if('Notification' in window) setTimeout(updateNotifUI,500);
-// First run setup
-if(!localStorage.getItem('init_done')&&!S.levelTasks[S.level+1]){
-  localStorage.setItem('init_done','1'); setTimeout(()=>openSetup(null),1500);
-}
-// Restore active confirm window
-if(S.luStatus==='confirm_window'&&S.confirmDeadline&&Date.now()<S.confirmDeadline){
-  setTimeout(openConf,1000);
-}
+if(!localStorage.getItem('init_done')&&!S.levelTasks[S.level+1]){localStorage.setItem('init_done','1');setTimeout(()=>openSetup(null),1500);}
+if(S.luStatus==='confirm_window'&&S.confirmDeadline&&Date.now()<S.confirmDeadline) setTimeout(openConf,1000);
 if(S.luStatus==='available') setTimeout(openLU,800);
 </script>
 </body>
