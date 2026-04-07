@@ -180,7 +180,30 @@
     /* REWARD */
     .reward-box{background:var(--adim);border:1px solid var(--acc);border-radius:12px;padding:16px;font-size:16px;color:var(--txt);text-align:center;line-height:1.5;font-weight:700;}
 
-    /* TOAST */
+    .dev-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;}
+    .dev-lbl{font-size:13px;color:var(--txt);}
+    .dev-sub{font-size:11px;color:var(--mut);margin-top:2px;}
+    .toggle{width:44px;height:26px;background:var(--bdr);border-radius:99px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none;}
+    .toggle.on{background:var(--acc);}
+    .toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;}
+    .toggle.on::after{transform:translateX(18px);}
+    /* PROFILE VIEW */
+    #view-profile{position:fixed;inset:0;background:var(--bg);z-index:20;overflow-y:auto;}
+    .pf-body{max-width:480px;margin:0 auto;padding:0 0 5rem;}
+    .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 1.5rem;}
+    .stat-card{background:var(--sur);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:4px;}
+    .stat-val{font-size:28px;font-weight:800;color:var(--acc);line-height:1;font-family:'Space Mono',monospace;}
+    .stat-lbl{font-size:11px;color:var(--mut);}
+    .tag-stat{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--sur);border-radius:10px;margin-bottom:2px;}
+    .tag-stat-nm{flex:1;font-size:13px;color:var(--txt);}
+    .tag-bar-bg{width:80px;height:6px;background:var(--s2);border-radius:99px;overflow:hidden;}
+    .tag-bar-fill{height:100%;background:var(--acc);border-radius:99px;transition:width .5s;}
+    .tag-stat-cnt{font-family:'Space Mono',monospace;font-size:11px;color:var(--mut);min-width:28px;text-align:right;}
+    .cls-stat{display:flex;align-items:center;gap:12px;padding:14px;background:var(--adim);border:1px solid var(--acc);border-radius:12px;margin:0 1.5rem;}
+    .cls-stat-ico{font-size:28px;}
+    .cls-stat-info{flex:1;}
+    .cls-stat-nm{font-size:15px;font-weight:700;color:var(--txt);}
+    .cls-stat-sub{font-size:11px;color:var(--mut);font-family:'Space Mono',monospace;margin-top:2px;}
     .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--acc);color:#0f0f0f;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;padding:10px 22px;border-radius:99px;white-space:nowrap;transition:transform .3s cubic-bezier(.4,0,.2,1),background .3s;z-index:99;pointer-events:none;}
     .toast.show{transform:translateX(-50%) translateY(0);}
   </style>
@@ -195,6 +218,7 @@
       <div class="hdr-acts">
         <div class="cls-badge hidden" id="cls-badge"></div>
         <button class="icon-btn" id="notif-btn">🔔</button>
+        <button class="icon-btn" id="profile-btn">👤</button>
         <button class="icon-btn" id="st-btn">⚙</button>
       </div>
     </div>
@@ -273,7 +297,22 @@
   </div>
 </div>
 
-<!-- MODAL: LEVEL UP -->
+<!-- PROFILE VIEW -->
+<div id="view-profile" class="hidden">
+  <div class="st-hdr"><button class="back-btn" id="pf-back">←</button><span class="st-ttl">Профиль</span></div>
+  <div class="pf-body">
+    <div id="pf-cls-block" class="hidden" style="margin-bottom:1rem"></div>
+    <div class="stat-grid" id="stat-grid"></div>
+    <div class="div"></div>
+    <div class="sec-hd"><span class="sec-lbl">по типам задач</span></div>
+    <div style="padding:0 1.5rem" id="tag-stats"></div>
+    <div class="div"></div>
+    <div class="sec-hd"><span class="sec-lbl">задания уровней</span></div>
+    <div style="padding:0 1.5rem" id="level-tasks-list"></div>
+  </div>
+</div>
+
+<!-- DEV MODE in settings - inserted via JS -->
 <div id="m-lu" class="ov hidden">
   <div class="modal">
     <div class="m-hnd"></div>
@@ -405,7 +444,8 @@ function defS(){
   return{totalXP:0,todayXP:0,bankXP:0,lastDate:'',history:[],
     level:1,dailyGoal:500,dailyFilled:false,
     luStatus:'none',timerEnd:null,confirmDeadline:null,taskLevel:null,levelTasks:{},
-    class:null,classLevel:0};
+    class:null,classLevel:0,devMode:false,
+    stats:{totalTasks:0,byTag:{physical:0,mental:0,health:0,hard:0,none:0},totalDays:0,maxStreak:0,lastActiveDate:'',streak:0}};
 }
 
 function migrateState(){
@@ -490,8 +530,23 @@ function addXP(name,baseXP,tag,isDaily,silent){
   S.bankXP+=Math.round(bankDelta*bankMult);
   S.history.push({name,xp,mult:mult>1?mult:null});
   if(S.history.length>100) S.history=S.history.slice(-100);
+  // stats
+  if(!S.stats) S.stats={totalTasks:0,byTag:{physical:0,mental:0,health:0,hard:0,none:0},totalDays:0,maxStreak:0,lastActiveDate:'',streak:0};
+  S.stats.totalTasks++;
+  const tagKey=tag&&S.stats.byTag.hasOwnProperty(tag)?tag:'none';
+  S.stats.byTag[tagKey]=(S.stats.byTag[tagKey]||0)+1;
+  // streak
+  const today=new Date().toDateString();
+  if(S.stats.lastActiveDate!==today){
+    const yesterday=new Date(Date.now()-86400000).toDateString();
+    if(S.stats.lastActiveDate===yesterday) S.stats.streak=(S.stats.streak||0)+1;
+    else S.stats.streak=1;
+    S.stats.lastActiveDate=today;
+    S.stats.totalDays=(S.stats.totalDays||0)+1;
+  }
+  S.stats.maxStreak=Math.max(S.stats.maxStreak||0,S.stats.streak||0);
 
-  const justFilled=!S.dailyFilled&&S.todayXP>=S.dailyGoal;
+  const justFilled=!S.dailyFilled&&(S.todayXP>=S.dailyGoal||S.devMode);
   if(justFilled){
     S.dailyFilled=true;
     if(S.luStatus==='task_done_bar_pending'){
@@ -628,6 +683,63 @@ function renderStLists(){
   document.getElementById('st-presets').innerHTML=PRE.map((p,i)=>`<div class="st-it"><span class="si-nm">${TAG_EMOJI[p.tag]||''} ${p.name}</span><span class="si-xp">+${p.xp}</span><button class="si-ed" data-t="preset" data-i="${i}">✎</button></div>`).join('')||'<div style="padding:10px 0;font-size:13px;color:var(--mut)">Пусто</div>';
   document.querySelectorAll('.si-ed').forEach(b=>b.addEventListener('click',()=>openEdit(b.dataset.t,+b.dataset.i)));
   document.getElementById('st-reset-info').textContent='Сброс бара через: '+fmtMidnight();
+  // dev mode toggle
+  let devRow=document.getElementById('dev-row');
+  if(!devRow){
+    const danger=document.querySelector('.st-sec:last-child');
+    const wrapper=document.createElement('div');wrapper.className='st-sec';wrapper.id='dev-row';
+    wrapper.innerHTML=`<div class="dev-row"><div><div class="dev-lbl">🛠 Режим разработчика</div><div class="dev-sub">Снимает ограничение 24ч на повышение уровня</div></div><button class="toggle${S.devMode?' on':''}" id="dev-toggle"></button></div>`;
+    danger.parentNode.insertBefore(wrapper,danger);
+    document.getElementById('dev-toggle').addEventListener('click',()=>{
+      S.devMode=!S.devMode;save();
+      document.getElementById('dev-toggle').classList.toggle('on',S.devMode);
+      showToast(S.devMode?'🛠 Режим разработчика ON':'Режим разработчика выключен');
+    });
+  } else {
+    document.getElementById('dev-toggle').classList.toggle('on',S.devMode);
+  }
+}
+
+function renderProfile(){
+  const st=S.stats||{totalTasks:0,byTag:{physical:0,mental:0,health:0,hard:0,none:0},totalDays:0,maxStreak:0,streak:0};
+  // class block
+  const clsBlock=document.getElementById('pf-cls-block');
+  if(S.class){
+    const cd=CLASS_DATA[S.class];
+    clsBlock.innerHTML=`<div class="cls-stat"><span class="cls-stat-ico">${cd.emoji}</span><div class="cls-stat-info"><div class="cls-stat-nm">${cd.name}</div><div class="cls-stat-sub">${cd.tagLabel} · ${cd.passive}</div>${S.level>=5?`<div class="cls-stat-sub" style="margin-top:4px">Смена класса: уровень ${S.classLevel+25}</div>`:''}</div></div>`;
+    clsBlock.classList.remove('hidden');
+  } else {
+    clsBlock.innerHTML=`<div style="padding:0 1.5rem"><div style="background:var(--adim);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--mut)">Класс открывается на уровне 5</div></div>`;
+    clsBlock.classList.remove('hidden');
+  }
+  // stat cards
+  const totalXPToday=S.todayXP;
+  document.getElementById('stat-grid').innerHTML=`
+    <div class="stat-card"><div class="stat-val">${S.level}</div><div class="stat-lbl">уровень</div></div>
+    <div class="stat-card"><div class="stat-val">${S.totalXP}</div><div class="stat-lbl">всего XP</div></div>
+    <div class="stat-card"><div class="stat-val">${st.totalTasks||0}</div><div class="stat-lbl">задач выполнено</div></div>
+    <div class="stat-card"><div class="stat-val">${st.totalDays||0}</div><div class="stat-lbl">активных дней</div></div>
+    <div class="stat-card"><div class="stat-val">${st.streak||0}</div><div class="stat-lbl">серия дней</div></div>
+    <div class="stat-card"><div class="stat-val">${st.maxStreak||0}</div><div class="stat-lbl">рекорд серии</div></div>
+    <div class="stat-card"><div class="stat-val">${S.bankXP}</div><div class="stat-lbl">XP в банке</div></div>
+    <div class="stat-card"><div class="stat-val">${Object.keys(S.levelTasks).length}</div><div class="stat-lbl">целей задано</div></div>`;
+  // tag stats
+  const byTag=st.byTag||{};
+  const total=Object.values(byTag).reduce((a,b)=>a+b,0)||1;
+  const tagDefs=[
+    {key:'physical',label:'💪 Физическое'},{key:'mental',label:'📚 Умственное'},
+    {key:'health',label:'❤️ Здоровье'},{key:'hard',label:'🗡️ Сложное'},{key:'none',label:'— Без тега'}
+  ];
+  document.getElementById('tag-stats').innerHTML=tagDefs.map(t=>{
+    const cnt=byTag[t.key]||0;const pct=Math.round(cnt/total*100);
+    return`<div class="tag-stat"><span class="tag-stat-nm">${t.label}</span><div class="tag-bar-bg"><div class="tag-bar-fill" style="width:${pct}%"></div></div><span class="tag-stat-cnt">${cnt}</span></div>`;
+  }).join('');
+  // level tasks
+  const keys=Object.keys(S.levelTasks).sort((a,b)=>+a-+b);
+  document.getElementById('level-tasks-list').innerHTML=keys.length?keys.map(k=>{
+    const t=S.levelTasks[k];const done=+k<=S.level;
+    return`<div class="st-it" style="${done?'opacity:.5':''}"><span class="si-nm">${done?'✓ ':''}Ур.${k}: ${t.task}${t.reward?' 🎁 '+t.reward:''}</span><span class="si-xp">${fmtMin(t.minutes)}</span></div>`;
+  }).join(''):'<div style="padding:10px 0;font-size:13px;color:var(--mut)">Нет заданий</div>';
 }
 
 // ===== LEVEL UP FLOW =====
@@ -917,8 +1029,9 @@ document.getElementById('add-btn').addEventListener('click',()=>{
   addXP(name,xp,null,false);
 });
 
-// Settings
-document.getElementById('st-btn').addEventListener('click',()=>{
+// Profile
+document.getElementById('profile-btn').addEventListener('click',()=>{renderProfile();document.getElementById('view-profile').classList.remove('hidden');});
+document.getElementById('pf-back').addEventListener('click',()=>document.getElementById('view-profile').classList.add('hidden'));
   renderStLists();document.getElementById('st-goal').value=S.dailyGoal;
   document.getElementById('view-st').classList.remove('hidden');
 });
@@ -1030,4 +1143,3 @@ if(S.luStatus==='available') setTimeout(openLU,800);
 </script>
 </body>
 </html>
-
