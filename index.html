@@ -1034,7 +1034,7 @@ document.getElementById('profile-btn').addEventListener('click',()=>{renderProfi
 document.getElementById('pf-back').addEventListener('click',()=>document.getElementById('view-profile').classList.add('hidden'));
   renderStLists();document.getElementById('st-goal').value=S.dailyGoal;
   document.getElementById('view-st').classList.remove('hidden');
-});
+;
 document.getElementById('st-back').addEventListener('click',()=>{document.getElementById('view-st').classList.add('hidden');render();});
 document.getElementById('st-goal-sv').addEventListener('click',()=>{
   const v=parseInt(document.getElementById('st-goal').value)||500;
