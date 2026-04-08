@@ -309,6 +309,8 @@
     <div class="div"></div>
     <div class="sec-hd"><span class="sec-lbl">задания уровней</span></div>
     <div style="padding:0 1.5rem" id="level-tasks-list"></div>
+    <div class="div"></div>
+    <div style="padding:0 1.5rem" id="pf-start-task-block"></div>
   </div>
 </div>
 
@@ -740,6 +742,24 @@ function renderProfile(){
     const t=S.levelTasks[k];const done=+k<=S.level;
     return`<div class="st-it" style="${done?'opacity:.5':''}"><span class="si-nm">${done?'✓ ':''}Ур.${k}: ${t.task}${t.reward?' 🎁 '+t.reward:''}</span><span class="si-xp">${fmtMin(t.minutes)}</span></div>`;
   }).join(''):'<div style="padding:10px 0;font-size:13px;color:var(--mut)">Нет заданий</div>';
+  // start task block
+  const stBlock=document.getElementById('pf-start-task-block');
+  const nxt=S.level+1;const task=S.levelTasks[nxt];
+  const canStart=task&&!['timer_running','confirm_window','task_done_bar_pending'].includes(S.luStatus);
+  const isRunning=['timer_running','confirm_window'].includes(S.luStatus);
+  const isPending=S.luStatus==='task_done_bar_pending';
+  if(isPending){
+    stBlock.innerHTML=`<div class="lu-opt"><div class="lu-lbl">задание выполнено ✓</div><div class="lu-task">${S.levelTasks[S.taskLevel]?S.levelTasks[S.taskLevel].task:''}</div><div class="lu-meta">Заполни дневной бар чтобы повыситься</div></div>`;
+  } else if(isRunning){
+    const rem=S.luStatus==='timer_running'?Math.max(0,(S.timerEnd||0)-Date.now()):Math.max(0,(S.confirmDeadline||0)-Date.now());
+    stBlock.innerHTML=`<div class="lu-opt"><div class="lu-lbl">${S.luStatus==='confirm_window'?'⏰ подтверди выполнение':'⏳ таймер идёт'}</div><div class="lu-task">${task?task.task:''}</div><div class="lu-meta">${hms(rem)}</div>${S.luStatus==='confirm_window'?`<button class="lu-btn" onclick="document.getElementById('view-profile').classList.add('hidden');setTimeout(openConf,100)">Подтвердить →</button>`:''}</div>`;
+  } else if(canStart){
+    stBlock.innerHTML=`<div class="lu-opt"><div class="lu-lbl">задание для уровня ${nxt}</div><div class="lu-task">${task.task}</div><div class="lu-meta">${fmtMin(task.minutes)} · можно начать до заполнения бара</div><button class="lu-btn" id="pf-start-btn">Начать задание →</button></div>`;
+    document.getElementById('pf-start-btn').onclick=()=>{document.getElementById('view-profile').classList.add('hidden');startTimer(nxt);};
+  } else if(!task){
+    stBlock.innerHTML=`<div class="lu-opt"><div class="lu-lbl">задание для уровня ${nxt}</div><div class="lu-task" style="color:var(--mut)">Не задано</div><button class="lu-btn dim" id="pf-set-btn">Задать →</button></div>`;
+    document.getElementById('pf-set-btn').onclick=()=>{document.getElementById('view-profile').classList.add('hidden');openSetup(null);};
+  } else {stBlock.innerHTML='';}
 }
 
 // ===== LEVEL UP FLOW =====
@@ -771,9 +791,10 @@ function openLU(){
 }
 
 function startTimer(lvl){
+  // can start timer any time (bar doesn't need to be full)
   S.luStatus='timer_running';S.taskLevel=lvl;
   const t=S.levelTasks[lvl];S.timerEnd=Date.now()+(t?t.minutes:60)*60*1000;
-  S.confirmDeadline=null;save();render();showToast('Таймер запущен!');
+  S.confirmDeadline=null;save();render();showToast('Таймер запущен! Заполни бар пока идёт.');
 }
 
 function skipLvl(){const SKIP=getSkipCost();if(S.bankXP<SKIP)return;S.bankXP-=SKIP;doLevelUp();}
@@ -781,7 +802,7 @@ function skipLvl(){const SKIP=getSkipCost();if(S.bankXP<SKIP)return;S.bankXP-=SK
 function doLevelUp(){
   const newLevel=S.level+1;
   S.level=newLevel;S.luStatus='none';S.timerEnd=null;S.confirmDeadline=null;S.taskLevel=null;
-  S.dailyFilled=S.todayXP>=S.dailyGoal;save();render();
+  S.dailyFilled=!S.devMode&&S.todayXP>=S.dailyGoal;save();render();
   playLevelUpAnim();
   showToast('🎉 Уровень '+S.level+'!');
   afterLevelUp();
@@ -1032,9 +1053,8 @@ document.getElementById('add-btn').addEventListener('click',()=>{
 // Profile
 document.getElementById('profile-btn').addEventListener('click',()=>{renderProfile();document.getElementById('view-profile').classList.remove('hidden');});
 document.getElementById('pf-back').addEventListener('click',()=>document.getElementById('view-profile').classList.add('hidden'));
-  renderStLists();document.getElementById('st-goal').value=S.dailyGoal;
-  document.getElementById('view-st').classList.remove('hidden');
-;
+// Settings
+document.getElementById('st-btn').addEventListener('click',()=>{renderStLists();document.getElementById('st-goal').value=S.dailyGoal;document.getElementById('view-st').classList.remove('hidden');});
 document.getElementById('st-back').addEventListener('click',()=>{document.getElementById('view-st').classList.add('hidden');render();});
 document.getElementById('st-goal-sv').addEventListener('click',()=>{
   const v=parseInt(document.getElementById('st-goal').value)||500;
@@ -1115,11 +1135,17 @@ if('serviceWorker' in navigator){
     dayReset();
     const hour=new Date().getHours();
     const left=Math.max(0,S.dailyGoal-S.todayXP);
-    const cls=S.class?(' · '+CLASS_DATA[S.class].emoji+CLASS_DATA[S.class].name):'';
-    if(hour<12) sendNotif('Доброе утро! Ур.'+S.level+cls,'Цель: '+S.dailyGoal+' XP · Банк: '+S.bankXP+' XP');
-    else if(S.luStatus==='confirm_window'&&S.confirmDeadline) sendNotif('Подтверди задание!','Осталось '+Math.round(Math.max(0,S.confirmDeadline-Date.now())/60000)+' мин');
-    else if(S.dailyFilled) sendNotif('Дневная цель выполнена!','Повышай уровень '+S.level+' → '+(S.level+1));
-    else sendNotif('Вечерний отчёт','Осталось '+left+' XP до цели · уровень '+S.level+cls);
+    const cls=S.class?(CLASS_DATA[S.class].emoji+' '+CLASS_DATA[S.class].name):'';
+    if(hour<12){
+      sendNotif('Доброе утро! Уровень '+S.level+(cls?' · '+cls:''),'Цель: '+S.dailyGoal+' XP · Банк: '+S.bankXP+' XP');
+    } else if(S.luStatus==='confirm_window'&&S.confirmDeadline){
+      const rem=Math.round(Math.max(0,S.confirmDeadline-Date.now())/60000);
+      sendNotif('Подтверди задание!','Осталось '+rem+' мин на подтверждение');
+    } else if(S.dailyFilled){
+      sendNotif('Дневная цель выполнена!','Повышай уровень '+S.level+' → '+(S.level+1));
+    } else {
+      sendNotif('Вечерний отчёт · Уровень '+S.level,'Осталось '+left+' XP до цели '+(cls?'· '+cls:''));
+    }
   });
 }
 
