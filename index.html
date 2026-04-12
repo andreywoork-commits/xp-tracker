@@ -591,7 +591,7 @@ function defS(){
     level:1,dailyGoal:500,dailyFilled:false,
     luStatus:'none',timerEnd:null,confirmDeadline:null,taskLevel:null,levelTasks:{},
     class:null,classLevel:0,devMode:false,vibration:true,
-    strikes:0,penaltyStage:0,lastCheckedDate:'',
+    strikes:0,penaltyStage:0,lastCheckedDate:'',doomDeadline:null,
     stats:{totalTasks:0,byTag:{physical:0,mental:0,health:0,hard:0,none:0},totalDays:0,maxStreak:0,lastActiveDate:'',streak:0}};
 }
 
@@ -829,9 +829,15 @@ function render(){
   document.getElementById('bar-bank').textContent='банк: '+bankXP+' XP';
   renderBanner();renderDailies();renderPresets();renderHist();renderSparks();
   // update penalty btn color
-  const _pc=['#6b6b6b','#f59e0b','#ff8c42','#ff5555','#cc0000'];
+  const _pc=['','#f59e0b','#ff8c42','#ff5555','#cc0000'];
+  const _pi=['⚠️','⚠️','🔴','☠️','💀'];
   const _ps=S.penaltyStage||0;
-  document.querySelectorAll('#penalty-btn').forEach(b=>{b.style.borderColor=_ps>0?_pc[_ps]:'';b.style.color=_ps>0?_pc[_ps]:'';});
+  document.querySelectorAll('#penalty-btn').forEach(b=>{
+    b.textContent=_pi[_ps];
+    b.style.borderColor=_ps>0?_pc[_ps]:'';
+    b.style.color=_ps>0?_pc[_ps]:'';
+    b.style.background=_ps>0?`${_pc[_ps]}18`:'';
+  });
 }
 
 function renderBanner(){
@@ -1337,7 +1343,7 @@ document.getElementById('add-btn').addEventListener('click',()=>{
 document.getElementById('profile-btn').addEventListener('click',()=>{renderProfile();document.getElementById('view-profile').classList.remove('hidden');});
 document.getElementById('pf-back').addEventListener('click',()=>document.getElementById('view-profile').classList.add('hidden'));
 // Settings
-document.getElementById('st-btn').addEventListener('click',()=>{renderStLists();document.getElementById('st-goal').value=S.dailyGoal;document.getElementById('view-st').classList.remove('hidden');});
+document.getElementById('st-btn').addEventListener('click',()=>{renderStLists();document.getElementById('st-goal').value=S.dailyGoal;renderDoomCountdown();document.getElementById('view-st').classList.remove('hidden');});
 document.getElementById('st-back').addEventListener('click',()=>{document.getElementById('view-st').classList.add('hidden');render();});
 document.getElementById('st-goal-sv').addEventListener('click',()=>{
   const v=parseInt(document.getElementById('st-goal').value)||500;
@@ -1575,14 +1581,16 @@ function vibrate(pattern){
 
 // ===== PENALTY SYSTEM =====
 function checkDayEnd(){
-  // Called on dayReset — evaluate yesterday
+  // Only run if user has been active before (lastDate set)
+  if(!S.lastDate) return;
   const yesterday=new Date(Date.now()-86400000).toDateString();
   if(S.lastCheckedDate===yesterday) return;
+  // Don't check if this is the very first day (lastDate === today means just started)
+  const today=new Date().toDateString();
+  if(S.lastDate===today) return;
   S.lastCheckedDate=yesterday;
-  // read cal for yesterday
   const cal=getCalendarData();
   const yStatus=cal[yesterday];
-  // count strike: bar not filled
   if(!yStatus||yStatus==='skip'||yStatus==='base'){
     S.strikes=(S.strikes||0)+1;
     applyPenaltyStage();
@@ -1616,7 +1624,8 @@ function applyPenaltyStage(){
 }
 
 function clearPenalty(){
-  S.strikes=0;S.penaltyStage=0;save();
+  S.strikes=0;S.penaltyStage=0;S.doomDeadline=null;save();
+  const el=document.getElementById('doom-countdown');if(el) el.innerHTML='';
   clearBreath();showToast('✅ Штрафы сняты');
 }
 
@@ -1625,32 +1634,40 @@ function clearPenalty(){
 let breathRAF=null;
 // stage configs: [speed_ms, min_opacity, max_opacity, glow_color, glow_spread]
 const BREATH_CFG=[
-  null, // stage 0 — off
-  {spd:4000, min:.0,  max:.18, col:'200,60,60',  glow:20},  // stage 1 — barely visible
-  {spd:3000, min:.05, max:.30, col:'220,80,30',  glow:35},  // stage 2
-  {spd:2200, min:.08, max:.45, col:'240,40,20',  glow:55},  // stage 3
-  {spd:1500, min:.15, max:.65, col:'255,20,20',  glow:80},  // stage 4
+  null,
+  {spd:5000, min:.0,  max:.08, col:'200,50,50',   bright_min:0.98, bright_max:1.01}, // stage 1 — barely there
+  {spd:3500, min:.04, max:.30, col:'220,70,20',   bright_min:0.94, bright_max:1.06}, // stage 2
+  {spd:2200, min:.10, max:.52, col:'240,30,10',   bright_min:0.82, bright_max:1.18}, // stage 3
+  {spd:1400, min:.18, max:.78, col:'255,10,10',   bright_min:0.65, bright_max:1.35}, // stage 4
 ];
 
 function startBreath(stage){
   if(breathRAF) cancelAnimationFrame(breathRAF);
   const overlay=document.getElementById('breath-overlay');
+  const main=document.getElementById('view-main');
   if(!overlay) return;
-  if(!stage||!BREATH_CFG[stage]){overlay.style.opacity='0';document.getElementById('view-main').style.filter='';return;}
+  if(!stage||!BREATH_CFG[stage]){
+    overlay.style.opacity='0';
+    if(main) main.style.filter='';
+    return;
+  }
   const cfg=BREATH_CFG[stage];
-  overlay.style.background=`radial-gradient(ellipse at center, rgba(${cfg.col},0) 20%, rgba(${cfg.col},1) 100%)`;
+  overlay.style.background=`radial-gradient(ellipse at center, rgba(${cfg.col},0) 15%, rgba(${cfg.col},1) 100%)`;
   const start=performance.now();
   function tick(now){
     const t=(now-start)/cfg.spd;
-    const wave=(Math.sin(t*Math.PI*2-Math.PI/2)+1)/2;
+    const wave=(Math.sin(t*Math.PI*2-Math.PI/2)+1)/2; // 0→1→0
+    // overlay pulse
     const op=cfg.min+wave*(cfg.max-cfg.min);
     overlay.style.opacity=String(op);
-    if(stage>=3){
-      const bright=0.85+wave*0.30;
-      const sat=stage>=4?`saturate(${1.1+wave*.3})`:'';
-      document.getElementById('view-main').style.filter=`brightness(${bright}) ${sat}`;
-    } else {
-      document.getElementById('view-main').style.filter='';
+    // brightness + saturation on main content
+    if(stage>=2&&main){
+      const bright=cfg.bright_min+wave*(cfg.bright_max-cfg.bright_min);
+      const sat=stage>=3?`saturate(${0.85+wave*.4})`:'';
+      const contrast=stage>=4?`contrast(${0.9+wave*.2})`:'';
+      main.style.filter=`brightness(${bright}) ${sat} ${contrast}`;
+    } else if(main){
+      main.style.filter='';
     }
     breathRAF=requestAnimationFrame(tick);
   }
@@ -1688,8 +1705,55 @@ document.getElementById('doom-yes').addEventListener('click',()=>{
 });
 document.getElementById('doom-no').addEventListener('click',()=>{
   document.getElementById('m-doom').classList.add('hidden');
-  showToast('Тогда заполни бар!');
+  // Set 24h deadline to level up
+  S.doomDeadline=Date.now()+24*60*60*1000;
+  save();
+  renderDoomCountdown();
+  showToast('24 часа чтобы исправиться!');
+  vibrate([200,100,200]);
 });
+
+// ===== DOOM COUNTDOWN =====
+function renderDoomCountdown(){
+  let el=document.getElementById('doom-countdown');
+  if(!el){
+    const danger=document.querySelector('#view-st .danger-btn');
+    if(!danger) return;
+    el=document.createElement('div');el.id='doom-countdown';
+    danger.parentNode.insertBefore(el,danger);
+  }
+  if(!S.doomDeadline){el.innerHTML='';return;}
+  const rem=S.doomDeadline-Date.now();
+  if(rem<=0){el.innerHTML='';doAutoReset();return;}
+  el.innerHTML=`<div style="text-align:center;padding:16px;background:rgba(200,0,0,.12);border:1px solid rgba(255,0,0,.35);border-radius:10px;margin-bottom:12px">
+    <div style="font-family:'Space Mono',monospace;font-size:10px;color:#ff5555;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">⚠ до стирания прогресса</div>
+    <div id="doom-cd-time" style="font-family:'Space Mono',monospace;font-size:28px;font-weight:700;color:#ff3333;line-height:1">${hms(rem)}</div>
+    <div style="font-size:11px;color:#6b6b6b;margin-top:6px">Повысь уровень чтобы остановить обратный отсчёт</div>
+  </div>`;
+}
+
+function doAutoReset(){
+  S.doomDeadline=null;save();
+  ['xpv5','xp_dpv4','xp_cal','xp_sparks','xp_inv'].forEach(k=>localStorage.removeItem(k));
+  S=defS();DP={date:new Date().toDateString(),done:[],bonusGiven:false};
+  sparks=0;inventory=[];
+  save();saveDP();saveSparks();saveInv();
+  document.body.className='';
+  document.getElementById('cls-badge').classList.add('hidden');
+  document.getElementById('hist').innerHTML='';
+  document.getElementById('hdiv').classList.add('hidden');
+  document.getElementById('hlbl').classList.add('hidden');
+  clearBreath();render();
+  openDoom(); // show doom screen again
+}
+
+// tick doom countdown every second
+setInterval(()=>{
+  if(!S.doomDeadline) return;
+  if(Date.now()>=S.doomDeadline){doAutoReset();return;}
+  const el=document.getElementById('doom-cd-time');
+  if(el) el.textContent=hms(S.doomDeadline-Date.now());
+},1000);
 
 // ===== PENALTY VIEW =====
 function renderPenaltyView(){
@@ -1742,6 +1806,7 @@ render();
 if((S.penaltyStage||0)>0) renderCracks();
 // doom if already at stage 4 on load
 if((S.penaltyStage||0)>=4) setTimeout(openDoom,800);
+if(S.doomDeadline&&Date.now()<S.doomDeadline) setTimeout(renderDoomCountdown,500);
 if('Notification' in window) setTimeout(updateNotifUI,500);
 if(!localStorage.getItem('init_done')&&!S.levelTasks[S.level+1]){localStorage.setItem('init_done','1');setTimeout(()=>openSetup(null),1500);}
 if(S.luStatus==='confirm_window'&&S.confirmDeadline&&Date.now()<S.confirmDeadline) setTimeout(openConf,1000);
