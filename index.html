@@ -24,14 +24,14 @@
     #view-main{max-width:480px;margin:0 auto;padding:0 0 6rem;}
 
     .hdr{padding:2.5rem 1.5rem 1rem;}
-    .hdr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+    .hdr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;gap:6px;}
     .lvl-pill{position:relative;overflow:hidden;background:var(--acc);color:#0f0f0f;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:5px 12px;border-radius:99px;letter-spacing:.04em;transition:background .3s;}
-    .hdr-acts{display:flex;gap:8px;}
+    .hdr-acts{display:flex;gap:5px;align-items:center;flex-shrink:0;}
     .icon-btn{background:var(--sur);border:1px solid var(--bdr);color:var(--mut);font-size:15px;width:36px;height:36px;border-radius:99px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
     .icon-btn:active{opacity:.6;}
     .icon-btn.on{border-color:var(--acc);color:var(--acc);}
     .cls-badge{font-family:'Space Mono',monospace;font-size:10px;color:var(--acc);padding:3px 8px;border:1px solid var(--acc);border-radius:99px;opacity:.7;cursor:pointer;display:inline-flex;align-items:center;gap:4px;line-height:1;white-space:nowrap;background:none;}
-    .xp-num{font-size:min(72px,16vw);font-weight:800;line-height:1;letter-spacing:-.03em;}
+    .xp-num{font-size:min(72px,16vw);font-weight:800;line-height:1;letter-spacing:-.03em;white-space:nowrap;}
     .xp-num span{color:var(--acc);font-size:min(40px,9vw);vertical-align:middle;margin-left:4px;transition:color .3s;}
     .xp-cap{font-family:'Space Mono',monospace;font-size:11px;color:var(--mut);margin-top:8px;}
 
@@ -205,7 +205,24 @@
     .cls-stat-info{flex:1;}
     .cls-stat-nm{font-size:15px;font-weight:700;color:var(--txt);}
     .cls-stat-sub{font-size:11px;color:var(--mut);font-family:'Space Mono',monospace;margin-top:2px;}
-    /* CLASS LORE */
+    .sparks-badge{font-family:'Space Mono',monospace;font-size:11px;color:#f59e0b;padding:4px 10px;border:1px solid rgba(245,158,11,.4);border-radius:99px;background:rgba(245,158,11,.08);display:inline-flex;align-items:center;gap:3px;line-height:1;white-space:nowrap;}
+    /* SHOP & INVENTORY */
+    #view-shop,#view-inv{position:fixed;inset:0;background:var(--bg);z-index:20;overflow-y:auto;}
+    .shop-item{background:var(--sur);border:1px solid var(--bdr);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px;cursor:pointer;transition:all .12s;}
+    .shop-item:active{border-color:var(--acc);}
+    .shop-item.locked{opacity:.45;cursor:not-allowed;}
+    .shop-item-header{display:flex;align-items:center;gap:10px;}
+    .shop-item-ico{font-size:22px;line-height:1;}
+    .shop-item-nm{flex:1;font-size:14px;font-weight:700;color:var(--txt);}
+    .shop-item-price{font-family:'Space Mono',monospace;font-size:12px;color:#f59e0b;white-space:nowrap;}
+    .shop-item-desc{font-size:12px;color:var(--mut);line-height:1.5;}
+    .inv-item{background:var(--sur);border:1px solid var(--bdr);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .12s;}
+    .inv-item:active{border-color:var(--acc);}
+    .inv-item-ico{font-size:24px;}
+    .inv-item-info{flex:1;}
+    .inv-item-nm{font-size:14px;font-weight:700;color:var(--txt);}
+    .inv-item-sub{font-size:11px;color:var(--mut);font-family:'Space Mono',monospace;margin-top:2px;}
+    .inv-cnt{font-family:'Space Mono',monospace;font-size:12px;color:var(--acc);}
     .cls-lore-header{display:flex;align-items:center;gap:12px;padding:4px 0;}
     .cls-lore-ico{font-size:36px;line-height:1;}
     .cls-lore-nm{font-size:20px;font-weight:800;}
@@ -239,8 +256,11 @@
     <div class="hdr-top">
       <div class="lvl-pill" id="lvl-pill">Уровень 1</div>
       <div class="hdr-acts">
+        <span class="sparks-badge" id="sparks-badge">✨ 0</span>
         <button class="cls-badge hidden" id="cls-badge"></button>
         <button class="icon-btn" id="notif-btn">🔔</button>
+        <button class="icon-btn" id="shop-btn" title="Магазин">🛒</button>
+        <button class="icon-btn" id="inv-btn" title="Инвентарь">🎒</button>
         <button class="icon-btn" id="profile-btn">👤</button>
         <button class="icon-btn" id="st-btn">⚙</button>
       </div>
@@ -411,6 +431,55 @@
   </div>
 </div>
 
+<!-- SHOP VIEW -->
+<div id="view-shop" class="hidden">
+  <div class="st-hdr"><button class="back-btn" id="shop-back">←</button><span class="st-ttl">Магазин</span><span class="sparks-badge" id="shop-sparks-badge" style="margin-left:auto">✨ 0</span></div>
+  <div class="st-body">
+    <div id="shop-locked-msg" class="hidden" style="padding:0 1.5rem"><div style="background:var(--rdim);border:1px solid rgba(255,85,85,.3);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--red)">🔒 Магазин открывается на уровне 3</div></div>
+    <div id="shop-items" style="padding:0 1.5rem;display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+</div>
+
+<!-- INVENTORY VIEW -->
+<div id="view-inv" class="hidden">
+  <div class="st-hdr"><button class="back-btn" id="inv-back">←</button><span class="st-ttl">Инвентарь</span></div>
+  <div class="st-body">
+    <div id="inv-empty" class="hidden" style="padding:0 1.5rem;font-size:13px;color:var(--mut)">Инвентарь пуст</div>
+    <div id="inv-items" style="padding:0 1.5rem;display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+</div>
+
+<!-- MODAL: ITEM DETAIL (shop & inventory) -->
+<div id="m-item" class="ov hidden">
+  <div class="modal">
+    <div class="m-hnd"></div>
+    <button class="m-close" id="item-close">×</button>
+    <div class="m-ico" id="item-ico">📜</div>
+    <div class="m-ttl" id="item-nm">Предмет</div>
+    <div style="font-size:13px;color:var(--mut);line-height:1.6;background:var(--s2);border-radius:10px;padding:12px 14px" id="item-desc"></div>
+    <div id="item-action-wrap"></div>
+  </div>
+</div>
+
+<!-- MODAL: COVENANT REASSIGN -->
+<div id="m-covenant" class="ov hidden">
+  <div class="modal">
+    <div class="m-hnd"></div>
+    <button class="m-close" id="covenant-close">×</button>
+    <div class="m-ico">📜</div>
+    <div class="m-ttl">Завет забытия</div>
+    <div class="m-sub" id="covenant-sub">Переназначить задание для уровня X</div>
+    <div style="font-size:13px;color:var(--mut);line-height:1.5;padding:4px 0">Текущее задание будет удалено. Введи новое:</div>
+    <input type="text" id="cov-task" placeholder="Новое задание"/>
+    <div class="time-row" style="gap:8px">
+      <input type="number" id="cov-min" placeholder="60" min="1" max="720" style="flex:1;background:var(--s2);border:1px solid var(--bdr);color:var(--txt);font-family:'Syne',sans-serif;font-size:14px;padding:12px 14px;border-radius:10px;outline:none;"/>
+      <span style="font-size:12px;color:var(--mut);white-space:nowrap">мин</span>
+    </div>
+    <button class="conf-yes" id="covenant-confirm">Применить завет →</button>
+    <button class="m-cancel" id="covenant-cancel">Отмена</button>
+  </div>
+</div>
+
 <!-- MODAL: CLASS LORE -->
 <div id="m-cls-lore" class="ov hidden">
   <div class="modal">
@@ -508,8 +577,12 @@ function migrateState(){
 migrateState();
 
 let S=JSON.parse(localStorage.getItem('xpv5')||'null')||defS();
-let PRE=JSON.parse(localStorage.getItem('xp_pre')||'null')||[
-  {name:"Постирал вещи",xp:25,tag:'physical'},{name:"Приготовил еду",xp:25,tag:'health'},
+let sparks=parseInt(localStorage.getItem('xp_sparks')||'0');
+let inventory=JSON.parse(localStorage.getItem('xp_inv')||'[]');
+function saveSparks(){localStorage.setItem('xp_sparks',String(sparks));}
+function saveInv(){localStorage.setItem('xp_inv',JSON.stringify(inventory));}
+function addSparks(n,silent){sparks+=n;saveSparks();if(!silent)showToast('✨ +'+n+' искр');}
+let PRE=JSON.parse(localStorage.getItem('xp_pre')||'null')||[  {name:"Постирал вещи",xp:25,tag:'physical'},{name:"Приготовил еду",xp:25,tag:'health'},
   {name:"Зарядка / разминка",xp:50,tag:'physical'},{name:"Уборка",xp:75,tag:'physical'},
   {name:"Учёба / работа 1ч",xp:100,tag:'mental'},{name:"Важная задача",xp:125,tag:'hard'},
   {name:"Сложное дело",xp:150,tag:'hard'}
@@ -589,6 +662,12 @@ function addXP(name,baseXP,tag,isDaily,silent){
     S.stats.totalDays=(S.stats.totalDays||0)+1;
   }
   S.stats.maxStreak=Math.max(S.stats.maxStreak||0,S.stats.streak||0);
+  // sparks: 5-12% of base XP, max 30, not for silent internal calls
+  if(!silent&&!isDaily){
+    const rate=0.05+Math.random()*0.07;
+    const earned=Math.min(30,Math.max(1,Math.round(baseXP*rate)));
+    addSparks(earned,true);
+  }
 
   const justFilled=!S.dailyFilled&&(S.todayXP>=S.dailyGoal||S.devMode);
   if(justFilled){
@@ -713,7 +792,7 @@ function render(){
   document.getElementById('bar-over').style.width=overPct+'%';
   document.getElementById('bar-cur').textContent=Math.min(todayXP,dailyGoal)+' / '+dailyGoal+' XP';
   document.getElementById('bar-bank').textContent='банк: '+bankXP+' XP';
-  renderBanner();renderDailies();renderPresets();renderHist();
+  renderBanner();renderDailies();renderPresets();renderHist();renderSparks();
 }
 
 function renderBanner(){
@@ -772,7 +851,7 @@ function renderDailies(){
   el.querySelectorAll('.daily').forEach(e=>e.addEventListener('click',()=>tapDaily(+e.dataset.i)));
   const allDone=DAI.length>0&&done===DAI.length;
   document.getElementById('d-bonus').style.opacity=allDone?'1':'.4';
-  if(allDone&&!DP.bonusGiven){DP.bonusGiven=true;saveDP();addXP('🎯 Все дейлики!',DAILY_BONUS,null,false,true);showToast('🎯 +'+DAILY_BONUS+' XP бонус!');}
+  if(allDone&&!DP.bonusGiven){DP.bonusGiven=true;saveDP();addXP('🎯 Все дейлики!',DAILY_BONUS,null,false,true);addSparks(10,true);showToast('🎯 +'+DAILY_BONUS+' XP  ✨ +10 искр!');}
 }
 
 function tapDaily(i){
@@ -927,19 +1006,28 @@ function doLevelUp(){
   const newLevel=S.level+1;
   S.level=newLevel;S.luStatus='none';S.timerEnd=null;S.confirmDeadline=null;S.taskLevel=null;
   S.dailyFilled=!S.devMode&&S.todayXP>=S.dailyGoal;save();render();
+  const jubilee=S.level%10===0;
+  const sparkReward=jubilee?300:100;
+  addSparks(sparkReward,true);
   playLevelUpAnim();
-  showToast('🎉 Уровень '+S.level+'!');
+  showToast('🎉 Уровень '+S.level+'!  ✨ +'+sparkReward+(jubilee?' 🎊':''));
   afterLevelUp();
 }
 
 function afterLevelUp(){
-  const reward=S.levelTasks[S.level]&&S.levelTasks[S.level].reward;
+  const taskData=S.levelTasks[S.level];
+  const reward=taskData&&taskData.reward;
+  const rewardXP=taskData&&taskData.rewardXP||0;
   const classAvail=S.level>=5&&(!S.class||S.level>=S.classLevel+25);
   if(reward){
-    setTimeout(()=>showRewardModal(reward,()=>{
+    setTimeout(()=>showRewardModal(reward,rewardXP,()=>{
       if(classAvail) setTimeout(()=>openClassSelect(()=>checkSetup()),300);
       else checkSetup();
     }),400);
+  } else if(rewardXP>0){
+    addXP('🎁 Награда уровня '+S.level,rewardXP,null,false,true);
+    if(classAvail) setTimeout(()=>openClassSelect(()=>checkSetup()),600);
+    else setTimeout(checkSetup,600);
   } else if(classAvail){
     setTimeout(()=>openClassSelect(()=>checkSetup()),600);
   } else {
@@ -947,9 +1035,12 @@ function afterLevelUp(){
   }
 }
 
-function showRewardModal(reward,cb){
+function showRewardModal(reward,rewardXP,cb){
   document.getElementById('reward-lvl').textContent='Уровень '+S.level;
-  document.getElementById('reward-txt').textContent=reward;
+  let html=reward;
+  if(rewardXP>0) html+=`<br><span style="font-size:13px;opacity:.7">+${rewardXP} XP начислено</span>`;
+  document.getElementById('reward-txt').innerHTML=html;
+  if(rewardXP>0) addXP('🎁 Награда уровня '+S.level,rewardXP,null,false,true);
   document.getElementById('reward-ok').onclick=()=>{closeM('m-reward');if(cb)cb();};
   openM('m-reward');
 }
@@ -975,7 +1066,11 @@ function openSetup(cb){
         <input type="number" id="sf-m-${lvl}" placeholder="60" min="1" max="720"/>
         <span class="time-lbl">мин</span>
       </div>
-      <input type="text" id="sf-r-${lvl}" placeholder="Награда за этот уровень (необязательно)"/>
+      <input type="text" id="sf-r-${lvl}" placeholder="Награда (текст, необязательно)"/>
+      <div class="time-row">
+        <input type="number" id="sf-rx-${lvl}" placeholder="0" min="0" max="500"/>
+        <span class="time-lbl">XP награды (макс 500)</span>
+      </div>
     </div>`).join('');
   document.getElementById('setup-save').onclick=()=>{
     let ok=true;
@@ -983,8 +1078,9 @@ function openSetup(cb){
       const t=(document.getElementById('sf-t-'+lvl).value||'').trim();
       const m=parseInt(document.getElementById('sf-m-'+lvl).value)||60;
       const r=(document.getElementById('sf-r-'+lvl).value||'').trim();
+      const rx=Math.min(500,parseInt(document.getElementById('sf-rx-'+lvl).value)||0);
       if(!t){ok=false;return;}
-      S.levelTasks[lvl]={task:t,minutes:m,reward:r||null};
+      S.levelTasks[lvl]={task:t,minutes:m,reward:r||null,rewardXP:rx||0};
     });
     if(!ok){showToast('Заполни задания');return;}
     save();closeM('m-setup');if(setupCb){setupCb();setupCb=null;}
@@ -1147,6 +1243,7 @@ document.getElementById('notif-x').addEventListener('click',()=>document.getElem
 
 document.getElementById('cls-lore-close').addEventListener('click',()=>closeM('m-cls-lore'));
 document.getElementById('cls-badge').addEventListener('click',openClassLore);
+document.getElementById('lu-close').addEventListener('click',()=>closeM('m-lu'));
 document.getElementById('lu-later').addEventListener('click',()=>closeM('m-lu'));
 
 document.getElementById('conf-close').addEventListener('click',()=>closeM('m-conf'));
@@ -1189,9 +1286,11 @@ document.getElementById('add-daily-btn').addEventListener('click',()=>openEdit('
 document.getElementById('add-preset-btn').addEventListener('click',()=>openEdit('preset',-1));
 document.getElementById('reset-btn').addEventListener('click',()=>{
   if(!confirm('Сбросить весь прогресс?')) return;
-  localStorage.removeItem('xpv5');localStorage.removeItem('xp_dpv4');
+  ['xpv5','xp_dpv4','xp_cal','xp_sparks','xp_inv'].forEach(k=>localStorage.removeItem(k));
   S=defS();DP={date:new Date().toDateString(),done:[],bonusGiven:false};
-  save();saveDP();document.body.className='';
+  sparks=0;inventory=[];
+  save();saveDP();saveSparks();saveInv();
+  document.body.className='';
   document.getElementById('cls-badge').classList.add('hidden');
   document.getElementById('view-st').classList.add('hidden');render();showToast('Сброшено');
 });
@@ -1280,6 +1379,137 @@ function showToast(msg){
   const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
   clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);
 }
+
+// ===== SPARKS RENDER =====
+function renderSparks(){
+  document.querySelectorAll('#sparks-badge,#shop-sparks-badge').forEach(el=>{if(el)el.textContent='✨ '+sparks;});
+}
+
+// ===== SHOP DATA =====
+const SHOP_ITEMS=[
+  {
+    id:'covenant',
+    name:'Завет забытия',
+    ico:'📜',
+    price:1500,
+    desc:'Позволяет переназначить задание на повышение уровня. Текущая задача стирается из памяти — ты сам решаешь что поставить на её место. Используется на активный уровень.',
+    usable:true,
+  }
+];
+
+function renderShop(){
+  const locked=S.level<3;
+  document.getElementById('shop-locked-msg').classList.toggle('hidden',!locked);
+  document.getElementById('shop-items').innerHTML='';
+  if(locked) return;
+  const container=document.getElementById('shop-items');
+  SHOP_ITEMS.forEach(item=>{
+    const cantAfford=sparks<item.price;
+    const div=document.createElement('div');
+    div.className='shop-item'+(cantAfford?' locked':'');
+    div.innerHTML=`<div class="shop-item-header"><span class="shop-item-ico">${item.ico}</span><span class="shop-item-nm">${item.name}</span><span class="shop-item-price">✨ ${item.price}</span></div><div class="shop-item-desc">${item.desc}</div>`;
+    div.addEventListener('click',()=>openItemModal(item,'shop'));
+    container.appendChild(div);
+  });
+}
+
+function renderInventory(){
+  const empty=inventory.length===0;
+  document.getElementById('inv-empty').classList.toggle('hidden',!empty);
+  const container=document.getElementById('inv-items');
+  container.innerHTML='';
+  // group by id
+  const counts={};
+  inventory.forEach(id=>{counts[id]=(counts[id]||0)+1;});
+  Object.entries(counts).forEach(([id,cnt])=>{
+    const item=SHOP_ITEMS.find(i=>i.id===id);
+    if(!item) return;
+    const div=document.createElement('div');
+    div.className='inv-item';
+    div.innerHTML=`<span class="inv-item-ico">${item.ico}</span><div class="inv-item-info"><div class="inv-item-nm">${item.name}</div><div class="inv-item-sub">${item.desc.slice(0,60)}...</div></div><span class="inv-cnt">×${cnt}</span>`;
+    div.addEventListener('click',()=>openItemModal(item,'inv'));
+    container.appendChild(div);
+  });
+}
+
+// ===== ITEM MODAL =====
+let itemModalCtx=null;
+function openItemModal(item,ctx){
+  itemModalCtx={item,ctx};
+  document.getElementById('item-ico').textContent=item.ico;
+  document.getElementById('item-nm').textContent=item.name;
+  document.getElementById('item-desc').textContent=item.desc;
+  const wrap=document.getElementById('item-action-wrap');
+  if(ctx==='shop'){
+    const cantAfford=sparks<item.price;
+    wrap.innerHTML=`<button class="conf-yes${cantAfford?' locked':''}" id="item-buy-btn" ${cantAfford?'disabled':''} style="${cantAfford?'opacity:.5;cursor:not-allowed;background:var(--sur);color:var(--mut);border:1px solid var(--bdr)':''}">Купить за ✨ ${item.price}</button>${cantAfford?`<div style="text-align:center;font-size:11px;color:var(--mut);margin-top:4px">Не хватает ${item.price-sparks} искр</div>`:''}`;
+    if(!cantAfford) document.getElementById('item-buy-btn').addEventListener('click',()=>buyItem(item));
+  } else {
+    const owned=inventory.filter(id=>id===item.id).length;
+    wrap.innerHTML=owned>0
+      ?`<button class="conf-yes" id="item-use-btn">Использовать (×${owned})</button>`
+      :`<div style="text-align:center;font-size:13px;color:var(--mut)">Нет в инвентаре</div>`;
+    if(owned>0) document.getElementById('item-use-btn').addEventListener('click',()=>useItem(item));
+  }
+  openM('m-item');
+}
+
+function buyItem(item){
+  if(sparks<item.price) return;
+  sparks-=item.price;saveSparks();
+  inventory.push(item.id);saveInv();
+  closeM('m-item');renderShop();renderSparks();
+  showToast('📜 Куплено: '+item.name);
+}
+
+function useItem(item){
+  if(item.id==='covenant') openCovenant();
+}
+
+// ===== COVENANT =====
+function openCovenant(){
+  closeM('m-item');
+  const nxt=S.level+1;
+  const cur=S.levelTasks[nxt];
+  document.getElementById('covenant-sub').textContent='Переназначить задание для уровня '+nxt;
+  document.getElementById('cov-task').value=cur?cur.task:'';
+  document.getElementById('cov-min').value=cur?cur.minutes:60;
+  openM('m-covenant');
+}
+
+document.getElementById('covenant-close').addEventListener('click',()=>closeM('m-covenant'));
+document.getElementById('covenant-cancel').addEventListener('click',()=>closeM('m-covenant'));
+document.getElementById('covenant-confirm').addEventListener('click',()=>{
+  const task=document.getElementById('cov-task').value.trim();
+  if(!task){showToast('Введи задание');return;}
+  const mins=parseInt(document.getElementById('cov-min').value)||60;
+  const nxt=S.level+1;
+  const cur=S.levelTasks[nxt];
+  S.levelTasks[nxt]={task,minutes:mins,reward:cur?cur.reward:null,rewardXP:cur?cur.rewardXP:0};
+  // consume item
+  const idx=inventory.indexOf('covenant');
+  if(idx>-1) inventory.splice(idx,1);
+  saveInv();save();
+  // reset timer if it was running for this level
+  if(S.luStatus==='timer_running'&&S.taskLevel===nxt){
+    S.luStatus='none';S.timerEnd=null;S.taskLevel=null;save();render();
+  }
+  closeM('m-covenant');renderInventory();
+  showToast('📜 Задание переназначено!');
+});
+
+// ===== SHOP/INV BUTTONS =====
+document.getElementById('shop-btn').addEventListener('click',()=>{
+  renderShop();renderSparks();
+  document.getElementById('view-shop').classList.remove('hidden');
+});
+document.getElementById('shop-back').addEventListener('click',()=>document.getElementById('view-shop').classList.add('hidden'));
+document.getElementById('inv-btn').addEventListener('click',()=>{
+  renderInventory();
+  document.getElementById('view-inv').classList.remove('hidden');
+});
+document.getElementById('inv-back').addEventListener('click',()=>document.getElementById('view-inv').classList.add('hidden'));
+document.getElementById('item-close').addEventListener('click',()=>closeM('m-item'));
 
 // ===== INIT =====
 dayReset();
