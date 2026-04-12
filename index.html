@@ -258,7 +258,6 @@
       <div class="hdr-acts">
         <span class="sparks-badge" id="sparks-badge">✨ 0</span>
         <button class="cls-badge hidden" id="cls-badge"></button>
-        <button class="icon-btn" id="notif-btn">🔔</button>
         <button class="icon-btn" id="shop-btn" title="Магазин">🛒</button>
         <button class="icon-btn" id="inv-btn" title="Инвентарь">🎒</button>
         <button class="icon-btn" id="profile-btn">👤</button>
@@ -322,7 +321,7 @@
 
 <!-- SETTINGS VIEW -->
 <div id="view-st" class="hidden">
-  <div class="st-hdr"><button class="back-btn" id="st-back">←</button><span class="st-ttl">Настройки</span></div>
+  <div class="st-hdr"><button class="back-btn" id="st-back">←</button><span class="st-ttl">Настройки</span><button class="icon-btn" id="notif-btn" style="margin-left:auto">🔔</button></div>
   <div class="st-body">
     <div class="st-sec">
       <div class="sec-lbl" style="padding:0">Дневная цель (XP)</div>
@@ -342,7 +341,7 @@
 
 <!-- PROFILE VIEW -->
 <div id="view-profile" class="hidden">
-  <div class="st-hdr"><button class="back-btn" id="pf-back">←</button><span class="st-ttl">Профиль</span></div>
+  <div class="st-hdr"><button class="back-btn" id="pf-back">←</button><span class="st-ttl">Профиль</span><button class="icon-btn" id="penalty-btn" style="margin-left:auto" title="Штрафы">⚠️</button></div>
   <div class="pf-body">
     <div id="pf-cls-block" class="hidden" style="margin-bottom:1rem"></div>
     <div class="stat-grid" id="stat-grid"></div>
@@ -428,6 +427,26 @@
     <div id="setup-fields" style="display:flex;flex-direction:column;gap:12px;"></div>
     <button class="m-sv" id="setup-save">Сохранить</button>
     <button class="m-cancel" id="setup-skip">Позже</button>
+  </div>
+</div>
+
+<!-- PENALTY VIEW -->
+<div id="view-penalty" class="hidden" style="position:fixed;inset:0;background:var(--bg);z-index:20;overflow-y:auto;">
+  <div class="st-hdr"><button class="back-btn" id="penalty-back">←</button><span class="st-ttl">Штрафы</span></div>
+  <div style="max-width:480px;margin:0 auto;padding:0 1.5rem 5rem;display:flex;flex-direction:column;gap:12px">
+    <div id="pen-status-card" style="border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px"></div>
+    <div id="pen-strikes" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+    <div style="background:var(--sur);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.1em">Как работает</div>
+      <div style="font-size:12px;color:var(--mut);line-height:1.7">
+        <b style="color:var(--txt)">⚠️ Страйк</b> — день без заполнения бара.<br>
+        <b style="color:#f59e0b">Стадия 1</b> (1–2 страйка) — предупреждение.<br>
+        <b style="color:#ff8c42">Стадия 2</b> (3 страйка) — трещины на экране, блок повышения уровня, вибрация при открытии.<br>
+        <b style="color:#ff5555">Стадия 3</b> (5 страйков) — паутина трещин, потеря 20% банка искр.<br>
+        <b style="color:#cc0000">Стадия 4</b> (7 страйков) — экран разбит, полный сброс прогресса.<br><br>
+        Снятие — повышение уровня или предмет "Индульгенция".
+      </div>
+    </div>
   </div>
 </div>
 
@@ -540,6 +559,20 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- BREATH OVERLAY -->
+<div id="breath-overlay" style="position:fixed;inset:0;pointer-events:none;z-index:200;opacity:0;background:radial-gradient(ellipse at center, rgba(200,60,60,0) 30%, rgba(200,60,60,1) 100%);transition:background .3s;"></div>
+
+<!-- DOOM MODAL -->
+<div id="m-doom" class="ov hidden" style="z-index:300">
+  <div class="modal" style="background:#0a0000;border:1px solid #ff0000;text-align:center;gap:16px">
+    <div style="font-size:48px">💀</div>
+    <div style="font-size:20px;font-weight:800;color:#ff5555;letter-spacing:.05em">ВЫ ВСЁ ПОТЕРЯЛИ</div>
+    <div style="font-size:13px;color:#6b6b6b;line-height:1.6">7 дней подряд без выполнения нормы.<br>Начать сначала?</div>
+    <button id="doom-yes" style="background:#ff5555;color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;padding:14px;border:none;border-radius:10px;cursor:pointer;width:100%">Да, начать с нуля</button>
+    <button id="doom-no" style="background:none;border:1px solid #2e2e2e;color:#6b6b6b;font-family:'Syne',sans-serif;font-size:13px;padding:12px;border-radius:10px;cursor:pointer;width:100%">Нет, я исправлюсь</button>
+  </div>
+</div>
+
 <script>
 // ===== CLASS DATA =====
 const CLASS_DATA = {
@@ -557,7 +590,8 @@ function defS(){
   return{totalXP:0,todayXP:0,bankXP:0,lastDate:'',history:[],
     level:1,dailyGoal:500,dailyFilled:false,
     luStatus:'none',timerEnd:null,confirmDeadline:null,taskLevel:null,levelTasks:{},
-    class:null,classLevel:0,devMode:false,
+    class:null,classLevel:0,devMode:false,vibration:true,
+    strikes:0,penaltyStage:0,lastCheckedDate:'',
     stats:{totalTasks:0,byTag:{physical:0,mental:0,health:0,hard:0,none:0},totalDays:0,maxStreak:0,lastActiveDate:'',streak:0}};
 }
 
@@ -627,6 +661,7 @@ function xpMult(tag,isDaily){
 function dayReset(){
   const t=new Date().toDateString();
   if(S.lastDate===t) return;
+  checkDayEnd();
   S.todayXP=0;S.dailyFilled=false;S.lastDate=t;
   if(S.luStatus==='failed') S.luStatus='none';
   DP={date:t,done:[],bonusGiven:false};
@@ -793,6 +828,10 @@ function render(){
   document.getElementById('bar-cur').textContent=Math.min(todayXP,dailyGoal)+' / '+dailyGoal+' XP';
   document.getElementById('bar-bank').textContent='банк: '+bankXP+' XP';
   renderBanner();renderDailies();renderPresets();renderHist();renderSparks();
+  // update penalty btn color
+  const _pc=['#6b6b6b','#f59e0b','#ff8c42','#ff5555','#cc0000'];
+  const _ps=S.penaltyStage||0;
+  document.querySelectorAll('#penalty-btn').forEach(b=>{b.style.borderColor=_ps>0?_pc[_ps]:'';b.style.color=_ps>0?_pc[_ps]:'';});
 }
 
 function renderBanner(){
@@ -892,15 +931,34 @@ function renderStLists(){
   if(!devRow){
     const danger=document.querySelector('.st-sec:last-child');
     const wrapper=document.createElement('div');wrapper.className='st-sec';wrapper.id='dev-row';
-    wrapper.innerHTML=`<div class="dev-row"><div><div class="dev-lbl">🛠 Режим разработчика</div><div class="dev-sub">Снимает ограничение 24ч на повышение уровня</div></div><button class="toggle${S.devMode?' on':''}" id="dev-toggle"></button></div>`;
+    wrapper.innerHTML=`<div class="dev-row"><div><div class="dev-lbl">🛠 Режим разработчика</div><div class="dev-sub">Снимает ограничение 24ч на повышение уровня</div></div><button class="toggle${S.devMode?' on':''}" id="dev-toggle"></button></div>
+<div class="dev-row"><div><div class="dev-lbl">📳 Вибрация</div><div class="dev-sub">При штрафах и уведомлениях</div></div><button class="toggle${S.vibration?' on':''}" id="vib-toggle"></button></div>
+<div style="margin-top:4px"><button id="skip-day-btn" style="width:100%;background:none;border:1px solid var(--bdr);color:var(--mut);font-family:'Syne',sans-serif;font-size:13px;padding:10px;border-radius:8px;cursor:pointer">⏭ Пропустить день (тест штрафов)</button></div>`;
     danger.parentNode.insertBefore(wrapper,danger);
     document.getElementById('dev-toggle').addEventListener('click',()=>{
       S.devMode=!S.devMode;save();
       document.getElementById('dev-toggle').classList.toggle('on',S.devMode);
       showToast(S.devMode?'🛠 Режим разработчика ON':'Режим разработчика выключен');
     });
+    document.getElementById('vib-toggle').addEventListener('click',()=>{
+      S.vibration=!S.vibration;save();
+      document.getElementById('vib-toggle').classList.toggle('on',S.vibration);
+      showToast(S.vibration?'📳 Вибрация включена':'Вибрация выключена');
+    });
+    document.getElementById('skip-day-btn').addEventListener('click',()=>{
+      // simulate a missed day: save yesterday as skip, increment strikes
+      const yesterday=new Date(Date.now()-86400000).toDateString();
+      const cal=getCalendarData();
+      cal[yesterday]='skip';
+      localStorage.setItem('xp_cal',JSON.stringify(cal));
+      S.lastCheckedDate='';// force re-check
+      S.strikes=(S.strikes||0)+1;
+      applyPenaltyStage();save();render();
+      showToast('⏭ День пропущен — страйк: '+(S.strikes||0));
+    });
   } else {
     document.getElementById('dev-toggle').classList.toggle('on',S.devMode);
+    const vt=document.getElementById('vib-toggle');if(vt)vt.classList.toggle('on',S.vibration);
   }
 }
 
@@ -1005,7 +1063,10 @@ function skipLvl(){const SKIP=getSkipCost();if(S.bankXP<SKIP)return;S.bankXP-=SK
 function doLevelUp(){
   const newLevel=S.level+1;
   S.level=newLevel;S.luStatus='none';S.timerEnd=null;S.confirmDeadline=null;S.taskLevel=null;
-  S.dailyFilled=!S.devMode&&S.todayXP>=S.dailyGoal;save();render();
+  S.dailyFilled=!S.devMode&&S.todayXP>=S.dailyGoal;
+  // clear penalties on level up
+  if((S.penaltyStage||0)>0) clearPenalty();
+  save();render();
   const jubilee=S.level%10===0;
   const sparkReward=jubilee?300:100;
   addSparks(sparkReward,true);
@@ -1292,6 +1353,11 @@ document.getElementById('reset-btn').addEventListener('click',()=>{
   save();saveDP();saveSparks();saveInv();
   document.body.className='';
   document.getElementById('cls-badge').classList.add('hidden');
+  // clear history UI
+  document.getElementById('hist').innerHTML='';
+  document.getElementById('hdiv').classList.add('hidden');
+  document.getElementById('hlbl').classList.add('hidden');
+  clearBreath();
   document.getElementById('view-st').classList.add('hidden');render();showToast('Сброшено');
 });
 
@@ -1387,14 +1453,8 @@ function renderSparks(){
 
 // ===== SHOP DATA =====
 const SHOP_ITEMS=[
-  {
-    id:'covenant',
-    name:'Завет забытия',
-    ico:'📜',
-    price:1500,
-    desc:'Позволяет переназначить задание на повышение уровня. Текущая задача стирается из памяти — ты сам решаешь что поставить на её место. Используется на активный уровень.',
-    usable:true,
-  }
+  {id:'covenant',name:'Завет забытия',ico:'📜',price:1500,desc:'Позволяет переназначить задание на повышение уровня. Текущая задача стирается из памяти — ты сам решаешь что поставить на её место. Используется на активный уровень.',usable:true},
+  {id:'indulgence',name:'Индульгенция',ico:'🕊️',price:2000,desc:'Снимает все активные штрафы и страйки. Трещины на экране исчезают. Очищает совесть — но не историю.',usable:true},
 ];
 
 function renderShop(){
@@ -1462,10 +1522,6 @@ function buyItem(item){
   showToast('📜 Куплено: '+item.name);
 }
 
-function useItem(item){
-  if(item.id==='covenant') openCovenant();
-}
-
 // ===== COVENANT =====
 function openCovenant(){
   closeM('m-item');
@@ -1511,12 +1567,181 @@ document.getElementById('inv-btn').addEventListener('click',()=>{
 document.getElementById('inv-back').addEventListener('click',()=>document.getElementById('view-inv').classList.add('hidden'));
 document.getElementById('item-close').addEventListener('click',()=>closeM('m-item'));
 
+// ===== VIBRATION =====
+function vibrate(pattern){
+  if(!S.vibration) return;
+  if('vibrate' in navigator) navigator.vibrate(pattern);
+}
+
+// ===== PENALTY SYSTEM =====
+function checkDayEnd(){
+  // Called on dayReset — evaluate yesterday
+  const yesterday=new Date(Date.now()-86400000).toDateString();
+  if(S.lastCheckedDate===yesterday) return;
+  S.lastCheckedDate=yesterday;
+  // read cal for yesterday
+  const cal=getCalendarData();
+  const yStatus=cal[yesterday];
+  // count strike: bar not filled
+  if(!yStatus||yStatus==='skip'||yStatus==='base'){
+    S.strikes=(S.strikes||0)+1;
+    applyPenaltyStage();
+  }
+  save();
+}
+
+function applyPenaltyStage(){
+  const prev=S.penaltyStage||0;
+  let stage=0;
+  if(S.strikes>=7) stage=4;
+  else if(S.strikes>=5) stage=3;
+  else if(S.strikes>=3) stage=2;
+  else if(S.strikes>=1) stage=1;
+  S.penaltyStage=stage;
+
+  if(stage===3&&prev<3){
+    // lose 20% bank
+    const loss=Math.floor(S.bankXP*0.2);
+    S.bankXP=Math.max(0,S.bankXP-loss);
+    showToast('💀 Штраф: -'+loss+' из банка');
+    vibrate([200,100,200,100,400]);
+  } else if(stage>=2){
+    vibrate([100,50,100]);
+  }
+  if(stage===4){
+    setTimeout(openDoom,600);
+  }
+  save();
+  renderCracks();
+}
+
+function clearPenalty(){
+  S.strikes=0;S.penaltyStage=0;save();
+  clearBreath();showToast('✅ Штрафы сняты');
+}
+
+// ===== CRACK CANVAS =====
+// ===== BREATH EFFECT =====
+let breathRAF=null;
+// stage configs: [speed_ms, min_opacity, max_opacity, glow_color, glow_spread]
+const BREATH_CFG=[
+  null, // stage 0 — off
+  {spd:4000, min:.0,  max:.18, col:'200,60,60',  glow:20},  // stage 1 — barely visible
+  {spd:3000, min:.05, max:.30, col:'220,80,30',  glow:35},  // stage 2
+  {spd:2200, min:.08, max:.45, col:'240,40,20',  glow:55},  // stage 3
+  {spd:1500, min:.15, max:.65, col:'255,20,20',  glow:80},  // stage 4
+];
+
+function startBreath(stage){
+  if(breathRAF) cancelAnimationFrame(breathRAF);
+  const overlay=document.getElementById('breath-overlay');
+  if(!overlay) return;
+  if(!stage||!BREATH_CFG[stage]){overlay.style.opacity='0';document.getElementById('view-main').style.filter='';return;}
+  const cfg=BREATH_CFG[stage];
+  overlay.style.background=`radial-gradient(ellipse at center, rgba(${cfg.col},0) 20%, rgba(${cfg.col},1) 100%)`;
+  const start=performance.now();
+  function tick(now){
+    const t=(now-start)/cfg.spd;
+    const wave=(Math.sin(t*Math.PI*2-Math.PI/2)+1)/2;
+    const op=cfg.min+wave*(cfg.max-cfg.min);
+    overlay.style.opacity=String(op);
+    if(stage>=3){
+      const bright=0.85+wave*0.30;
+      const sat=stage>=4?`saturate(${1.1+wave*.3})`:'';
+      document.getElementById('view-main').style.filter=`brightness(${bright}) ${sat}`;
+    } else {
+      document.getElementById('view-main').style.filter='';
+    }
+    breathRAF=requestAnimationFrame(tick);
+  }
+  breathRAF=requestAnimationFrame(tick);
+}
+
+function renderCracks(){
+  const stage=S.penaltyStage||0;
+  startBreath(stage);
+  if(stage>=2) vibrate([50]);
+}
+
+function clearBreath(){
+  if(breathRAF) cancelAnimationFrame(breathRAF);
+  const overlay=document.getElementById('breath-overlay');
+  if(overlay) overlay.style.opacity='0';
+  document.getElementById('view-main').style.filter='';
+}
+
+// ===== DOOM =====
+function openDoom(){
+  if(document.getElementById('m-doom').classList.contains('hidden'))
+    document.getElementById('m-doom').classList.remove('hidden');
+  vibrate([500,100,500,100,1000]);
+}
+document.getElementById('doom-yes').addEventListener('click',()=>{
+  document.getElementById('m-doom').classList.add('hidden');
+  ['xpv5','xp_dpv4','xp_cal','xp_sparks','xp_inv'].forEach(k=>localStorage.removeItem(k));
+  S=defS();DP={date:new Date().toDateString(),done:[],bonusGiven:false};
+  sparks=0;inventory=[];
+  save();saveDP();saveSparks();saveInv();
+  document.body.className='';
+  document.getElementById('cls-badge').classList.add('hidden');
+  renderCracks();render();showToast('Начинаем сначала...');
+});
+document.getElementById('doom-no').addEventListener('click',()=>{
+  document.getElementById('m-doom').classList.add('hidden');
+  showToast('Тогда заполни бар!');
+});
+
+// ===== PENALTY VIEW =====
+function renderPenaltyView(){
+  const stage=S.penaltyStage||0;
+  const strikes=S.strikes||0;
+  const stageColors=['#6b6b6b','#f59e0b','#ff8c42','#ff5555','#cc0000'];
+  // update button color everywhere it appears
+  document.querySelectorAll('#penalty-btn').forEach(btn=>{
+    btn.style.borderColor=stage>0?stageColors[stage]:'';
+    btn.style.color=stage>0?stageColors[stage]:'';
+  });
+  const stageNames=['Чисто','Предупреждение','Опасность','Критично','Катастрофа'];
+  const stageEmoji=['✅','⚠️','🔴','☠️','💀'];
+  const card=document.getElementById('pen-status-card');
+  card.style.background=`${stageColors[stage]}22`;
+  card.style.border=`1px solid ${stageColors[stage]}66`;
+  card.innerHTML=`
+    <div style="font-size:28px">${stageEmoji[stage]}</div>
+    <div style="font-size:18px;font-weight:800;color:${stageColors[stage]}">${stageNames[stage]}</div>
+    <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--mut)">${strikes} страйк${strikes===1?'':strikes<5?'а':'ов'} · стадия ${stage}/4</div>
+    ${stage>0?`<div style="font-size:12px;color:var(--mut)">Снимается при повышении уровня или "Индульгенцией"</div>`:'<div style="font-size:12px;color:var(--mut)">Заполняй бар каждый день чтобы не получить страйк</div>'}`;
+  const strikesEl=document.getElementById('pen-strikes');
+  strikesEl.innerHTML=Array.from({length:7},(_,i)=>{
+    const filled=i<strikes;
+    const col=filled?(i<3?'#f59e0b':i<5?'#ff5555':'#cc0000'):'var(--s2)';
+    return`<div style="width:36px;height:36px;border-radius:8px;background:${col};display:flex;align-items:center;justify-content:center;font-size:16px;border:1px solid ${filled?col:'var(--bdr)'};">${filled?'✗':'·'}</div>`;
+  }).join('');
+}
+
+document.querySelectorAll('#penalty-btn').forEach(btn=>btn.addEventListener('click',()=>{renderPenaltyView();document.getElementById('view-penalty').classList.remove('hidden');}));
+document.getElementById('penalty-back').addEventListener('click',()=>document.getElementById('view-penalty').classList.add('hidden'));
+
+// ===== USE INDULGENCE =====
+function useItem(item){
+  if(item.id==='covenant') openCovenant();
+  if(item.id==='indulgence'){
+    const idx=inventory.indexOf('indulgence');
+    if(idx>-1) inventory.splice(idx,1);
+    saveInv();clearPenalty();closeM('m-item');renderInventory();
+  }
+}
+
 // ===== INIT =====
 dayReset();
 if(S.class) document.body.className='cls-'+S.class;
 const badge=document.getElementById('cls-badge');
 if(S.class){badge.textContent=CLASS_DATA[S.class].emoji+' '+CLASS_DATA[S.class].name;badge.classList.remove('hidden');}
 render();
+// init cracks if penalty active
+if((S.penaltyStage||0)>0) renderCracks();
+// doom if already at stage 4 on load
+if((S.penaltyStage||0)>=4) setTimeout(openDoom,800);
 if('Notification' in window) setTimeout(updateNotifUI,500);
 if(!localStorage.getItem('init_done')&&!S.levelTasks[S.level+1]){localStorage.setItem('init_done','1');setTimeout(()=>openSetup(null),1500);}
 if(S.luStatus==='confirm_window'&&S.confirmDeadline&&Date.now()<S.confirmDeadline) setTimeout(openConf,1000);
